@@ -21,9 +21,15 @@ function getPoints(rules: string[] | string): string[] {
 function RulesList({ points }: { points: string[] }) {
   return (
     <ul className="list-disc list-inside space-y-1 text-white/60 leading-relaxed">
-      {points.map((point, i) => (
-        <li key={i}>{point}{point.endsWith(".") ? "" : "."}</li>
-      ))}
+      {points.map((point, i) => {
+        const key = `${point}-${i}`
+        return (
+          <li key={key}>
+            {point}
+            {point.endsWith(".") ? "" : "."}
+          </li>
+        )
+      })}
     </ul>
   )
 }

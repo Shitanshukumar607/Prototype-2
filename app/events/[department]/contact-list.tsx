@@ -29,8 +29,11 @@ export function ContactList({ contacts }: ContactListProps) {
 
   return (
     <ul className="space-y-1.5 text-white/70">
-      {contacts.map((c) => (
-        <li key={c.phone} className="flex items-center gap-2 text-sm">
+      {contacts.map((c, index) => (
+        <li
+          key={`${c.name}-${c.phone}-${index}`}
+          className="flex items-center gap-2 text-sm"
+        >
           <a
             href={`tel:${c.phone}`}
             className="hover:text-white underline-offset-2 hover:underline"
