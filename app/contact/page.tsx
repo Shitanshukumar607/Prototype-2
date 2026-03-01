@@ -16,7 +16,7 @@ const FAQ_ITEMS = [
   },
   {
     q: "How do I register for events?",
-    a: "Head to the Register page to sign up. You can register for individual events or multiple events depending on the rules for each.",
+    a: "Visit the Events page and use the Register button on the specific event card you want to join.",
   },
   {
     q: "Who can participate?",
@@ -24,7 +24,7 @@ const FAQ_ITEMS = [
   },
   {
     q: "Is there a registration fee?",
-    a: "Registration details and any fees (if applicable) are mentioned per event. Visit the Events page and the Register page for the latest information.",
+    a: "Registration details and any fees (if applicable) are mentioned per event on its card.",
   },
   {
     q: "How can I get in touch with the organisers?",
@@ -82,11 +82,7 @@ export default function ContactPage() {
                   <Link href="/events" className="text-white/80 hover:text-white underline underline-offset-2">
                     Events
                   </Link>{" "}
-                  page and the{" "}
-                  <Link href="/register" className="text-white/80 hover:text-white underline underline-offset-2">
-                    Register
-                  </Link>{" "}
-                  page for updates.
+                  page and use the Register button on the relevant event card.
                 </p>
               </div>
             </div>

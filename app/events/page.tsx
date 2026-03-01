@@ -28,8 +28,21 @@ export default function EventsPage() {
                 href={`/events/${grandHackathon.id}`}
                 className="group block w-full focus:outline-none focus-visible:ring-2 focus-visible:ring-white/20 focus-visible:ring-offset-2 focus-visible:ring-offset-black"
               >
-                <div className="relative overflow-hidden rounded-2xl border border-white/[0.08] bg-white/[0.06] backdrop-blur-2xl transition-all duration-300 hover:bg-white/[0.09] hover:border-white/[0.12]">
-                  <div className="absolute left-0 top-0 h-full w-[2px] bg-amber-400/70" aria-hidden />
+                <div className="relative overflow-hidden rounded-3xl border border-white/[0.08] bg-white/[0.06] backdrop-blur-2xl transition-all duration-300 hover:bg-white/[0.09] hover:border-white/[0.12]">
+                  <svg
+                    viewBox="0 0 12 100"
+                    preserveAspectRatio="none"
+                    className="absolute left-0 top-0 h-full w-3 text-amber-400/70"
+                    aria-hidden
+                  >
+                    <path
+                      d="M 0 0 Q 6 5 0 10 Q 6 15 0 20 Q 6 25 0 30 Q 6 35 0 40 Q 6 45 0 50 Q 6 55 0 60 Q 6 65 0 70 Q 6 75 0 80 Q 6 85 0 90 Q 6 95 0 100"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="1.5"
+                      vectorEffect="non-scaling-stroke"
+                    />
+                  </svg>
                   <div className="relative pl-7 pr-6 py-5 sm:pl-9 sm:py-6">
                     <p className="mb-1.5 text-[10px] font-medium uppercase tracking-[0.25em] text-amber-400/60">
                       Featured
@@ -38,7 +51,7 @@ export default function EventsPage() {
                       {grandHackathon.fullName ?? grandHackathon.name}
                     </h2>
                     <p className="mt-1 text-sm text-amber-200/80">
-                      24 hr · ₹1,20,000 prize pool
+                      3 tracks · 24 hr · ₹1,20,000 prize pool
                     </p>
                     <p className="mt-2 text-[13px] text-white/50 transition-colors group-hover:text-white/70">
                       View details →
@@ -53,36 +66,32 @@ export default function EventsPage() {
             <p className="mb-3 text-[11px] font-medium uppercase tracking-[0.2em] text-white/40">
               By department
             </p>
-            <div className="space-y-1.5">
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
               {otherDepartments.map((dept) => (
                 <Link
                   key={dept.id}
                   href={`/events/${dept.id}`}
-                  className="group flex items-center justify-between gap-4 rounded-xl border border-white/[0.06] bg-white/[0.03] px-5 py-3 backdrop-blur-xl transition-all duration-200 hover:bg-white/[0.06] hover:border-white/[0.1] focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-white/15 sm:px-6"
+                  className="group flex flex-col rounded-3xl border border-white/[0.06] bg-white/[0.03] p-4 backdrop-blur-xl transition-all duration-200 hover:bg-white/[0.06] hover:border-white/[0.1] focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-white/15"
                 >
-                  <div className="min-w-0">
-                    <p className="font-medium text-white/95 text-[15px] tracking-tight">
-                      {dept.fullName ?? dept.name}
-                    </p>
-                    <p className="mt-0.5 text-xs text-white/45">
-                      {dept.events.length} event{dept.events.length !== 1 ? "s" : ""}
-                    </p>
+                  <p className="font-medium text-white/95 text-[14px] sm:text-[15px] tracking-tight line-clamp-2">
+                    {dept.fullName ?? dept.name}
+                  </p>
+                  <p className="mt-1 text-xs text-white/45">
+                    {dept.events.length} event{dept.events.length !== 1 ? "s" : ""}
+                  </p>
+                  <div className="mt-2 flex flex-wrap gap-1">
+                    {dept.events.map((ev) => (
+                      <span
+                        key={ev.name}
+                        className="text-[10px] font-medium uppercase tracking-wider text-white/50"
+                      >
+                        {ev.tag ?? ev.type}
+                      </span>
+                    ))}
                   </div>
-                  <div className="flex items-center gap-2.5">
-                    <div className="flex flex-wrap gap-1.5 justify-end">
-                      {dept.events.map((ev) => (
-                        <span
-                          key={ev.name}
-                          className="text-[11px] font-medium uppercase tracking-wider text-white/50"
-                        >
-                          {ev.type}
-                        </span>
-                      ))}
-                    </div>
-                    <span className="text-white/30 text-sm transition-all group-hover:translate-x-0.5 group-hover:text-white/50" aria-hidden>
-                      →
-                    </span>
-                  </div>
+                  <span className="mt-auto pt-2 text-white/30 text-xs transition-all group-hover:text-white/50" aria-hidden>
+                    View →
+                  </span>
                 </Link>
               ))}
             </div>

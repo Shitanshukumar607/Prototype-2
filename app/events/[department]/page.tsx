@@ -4,6 +4,9 @@ import { getDepartmentById, getDepartmentIds } from "@/lib/events-data"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import LuminusParticles from "../../Home page/vercel-logo-particles"
+import { EventCardRules } from "./event-card-rules"
+import { EventRegisterDialog } from "./event-register-dialog"
+import { ContactList } from "./contact-list"
 
 interface PageProps {
   params: Promise<{ department: string }>
@@ -35,37 +38,67 @@ export default async function DepartmentEventsPage({ params }: PageProps) {
         <p className="text-white/70 mb-10">
           {dept.events.length} event{dept.events.length !== 1 ? "s" : ""} in this department.
         </p>
-        <div className="space-y-5">
-          {dept.events.map((ev) => (
-            <Card
-              key={ev.name}
-              className="rounded-2xl border-white/10 bg-white/5 backdrop-blur-md shadow-lg shadow-black/20"
-            >
-              <CardHeader className="pb-2 px-6 pt-6">
-                <div className="flex flex-wrap items-center gap-2">
-                  <CardTitle className="text-xl text-white tracking-tight">
-                    {ev.name}
-                  </CardTitle>
-                  <Badge
-                    variant={ev.type === "Flagship" ? "default" : "secondary"}
-                    className={
-                      ev.type === "Flagship"
-                        ? "rounded-full bg-amber-500/20 text-amber-300 border-amber-500/40 px-2.5 py-0.5"
-                        : "rounded-full bg-white/10 text-white/80 border-white/20 px-2.5 py-0.5"
-                    }
-                  >
-                    {ev.type}
-                  </Badge>
-                </div>
-                <CardDescription className="text-white/60 text-sm pt-1">
-                  Team size: {ev.teamSize} · Duration: {ev.duration}
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="pt-0 px-6 pb-6 text-sm text-white/80">
-                <p><span className="text-white/60">Prize:</span> ₹{ev.prize.toLocaleString("en-IN")}</p>
-              </CardContent>
-            </Card>
-          ))}
+        <div className="space-y-6">
+          {dept.events.map((ev) => {
+            const primaryContact = ev.contacts?.[0]
+            return (
+              <Card
+                key={ev.name}
+                className="rounded-2xl border-white/10 bg-white/5 backdrop-blur-md shadow-lg shadow-black/20 overflow-hidden"
+              >
+                <CardHeader className="pb-3 px-6 pt-6">
+                  <div className="flex flex-wrap items-center gap-2">
+                    <CardTitle className="text-xl text-white tracking-tight">
+                      {ev.name}
+                    </CardTitle>
+                    <Badge
+                      variant={ev.type === "Flagship" ? "default" : "secondary"}
+                      className={
+                        ev.type === "Flagship"
+                          ? "rounded-full bg-amber-500/20 text-amber-300 border-amber-500/40 px-2.5 py-0.5"
+                          : "rounded-full bg-white/10 text-white/80 border-white/20 px-2.5 py-0.5"
+                      }
+                    >
+                      {ev.tag ?? ev.type}
+                    </Badge>
+                  </div>
+                  <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm text-white/60 pt-2">
+                    {ev.date && <span>Date: {ev.date}</span>}
+                    <span>Team: {ev.teamSize}</span>
+                    <span>Duration: {ev.duration}</span>
+                  </div>
+                </CardHeader>
+                <CardContent className="px-6 pb-6 space-y-4 text-sm">
+                  {ev.description && (
+                    <p className="text-white/80 leading-relaxed">{ev.description}</p>
+                  )}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-white/80">
+                    {ev.registrationFee != null && (
+                      <p><span className="text-white/50">Registration fee:</span> ₹{ev.registrationFee}</p>
+                    )}
+                    {dept.id !== "grand-hackathon" && (
+                      <p><span className="text-white/50">Prize pool:</span> ₹{ev.prize.toLocaleString("en-IN")}</p>
+                    )}
+                  </div>
+                  <div className="pt-1">
+                    <EventRegisterDialog
+                      departmentName={dept.fullName ?? dept.name}
+                      eventName={ev.name}
+                      teamSize={ev.teamSize}
+                      registrationFee={ev.registrationFee}
+                    />
+                  </div>
+                  {ev.rules && <EventCardRules rules={ev.rules} />}
+                  {ev.contacts && ev.contacts.length > 0 && (
+                    <div>
+                      <h4 className="text-white/90 font-medium mb-2">Contact</h4>
+                      <ContactList contacts={ev.contacts} />
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            )
+          })}
         </div>
         </div>
       </div>
