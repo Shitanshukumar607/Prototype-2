@@ -54,7 +54,8 @@ export default function LuminusParticles({ startDispersed = false, hideCursor = 
       return dpr
     }
     let dpr = resize()
-    window.addEventListener("resize", () => { dpr = resize() })
+    const handleResize = () => { dpr = resize() }
+    window.addEventListener("resize", handleResize)
     if (hideCursor) {
       document.documentElement.style.cursor = "none"
       document.body.style.cursor = "none"
@@ -350,7 +351,7 @@ export default function LuminusParticles({ startDispersed = false, hideCursor = 
       visible = false
       cancelAnimationFrame(rafId)
       document.removeEventListener("visibilitychange", onVisibilityChange)
-      window.removeEventListener("resize", () => { dpr = resize() })
+      window.removeEventListener("resize", handleResize)
       if (hideCursor) {
         document.documentElement.style.cursor = ""
         document.body.style.cursor = ""
