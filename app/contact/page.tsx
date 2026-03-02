@@ -140,6 +140,14 @@ export default function ContactPage() {
               </Accordion>
             </div>
           </section>
+          <br></br>
+          <section aria-label="Other Questions">
+            <h2 className="text-[11px] font-medium uppercase tracking-[0.2em] text-white/40 mb-4">
+              <center>For any other questions<br></br>
+              please contact the Events team.
+              </center>
+            </h2>
+          </section>
         </div>
       </div>
     </main>
