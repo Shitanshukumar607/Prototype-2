@@ -22,6 +22,27 @@ export default function LuminusParticles({ startDispersed = false, hideCursor = 
     const canvas = canvasRef.current!
     const ctx = canvas.getContext("2d")!
 
+    /** Extra particles that fade in on scroll to fill the background when dispersed */
+    type FillParticle = { x: number; y: number; size: number; phase: number; r: number; g: number; b: number }
+    let fillParticles: FillParticle[] = []
+
+    function createFillParticles() {
+      const w = canvas.width
+      const h = canvas.height
+      const count = Math.min(2200, Math.floor((w * h) / (36 * 36)))
+      fillParticles = []
+      for (let i = 0; i < count; i++) {
+        fillParticles.push({
+          x: Math.random() * w,
+          y: Math.random() * h,
+          size: Math.random() * 1.4 + 0.4,
+          phase: Math.random() * Math.PI * 2,
+          r: 200 + Math.floor(Math.random() * 55),
+          g: 180 + Math.floor(Math.random() * 75),
+          b: 255,
+        })
+      }
+    }
 
     const resize = () => {
       const w = window.innerWidth
@@ -29,6 +50,7 @@ export default function LuminusParticles({ startDispersed = false, hideCursor = 
       const dpr = Math.min(typeof window !== "undefined" ? window.devicePixelRatio || 1 : 1, 2)
       canvas.width = w * dpr
       canvas.height = h * dpr
+      if (fillParticles.length > 0) createFillParticles()
       return dpr
     }
     let dpr = resize()
@@ -101,7 +123,6 @@ export default function LuminusParticles({ startDispersed = false, hideCursor = 
     } else {
       scrollProgress = 1
     }
-
 
     function loadLogo(): Promise<void> {
       return new Promise((resolve) => {
@@ -259,6 +280,17 @@ export default function LuminusParticles({ startDispersed = false, hideCursor = 
       if (!visible) return
       ctx.clearRect(0, 0, canvas.width, canvas.height)
 
+      // Draw fill particles when scrolled — fade in with scroll to fill the background
+      if (fillParticles.length > 0 && scrollProgress > 0) {
+        // Keep the background animated, but dim enough for section text to remain readable.
+        const fillAlpha = 0.05 + 0.2 * scrollProgress
+        for (const fp of fillParticles) {
+          const twinkle = 0.5 + 0.5 * Math.sin(time * 0.002 + fp.phase)
+          ctx.fillStyle = `rgba(${fp.r},${fp.g},${fp.b},${fillAlpha * twinkle})`
+          ctx.fillRect(fp.x, fp.y, fp.size, fp.size)
+        }
+      }
+
       // Expand & cull shockwaves
       for (const sw of shockwaves) { sw.radius += 12; sw.age++ }
       for (let i = shockwaves.length - 1; i >= 0; i--) {
@@ -292,7 +324,8 @@ export default function LuminusParticles({ startDispersed = false, hideCursor = 
         p.y += p.vy
 
         const twinkle = 0.6 + 0.4 * Math.sin(time * 0.003 + p.phase)
-        ctx.fillStyle = `rgba(${Math.round(p.r)},${Math.round(p.g)},${Math.round(p.b)},${twinkle})`
+        const readabilityDim = 1 - 0.45 * scrollProgress
+        ctx.fillStyle = `rgba(${Math.round(p.r)},${Math.round(p.g)},${Math.round(p.b)},${twinkle * readabilityDim})`
         ctx.fillRect(p.x, p.y, p.size, p.size)
       }
 
@@ -308,6 +341,7 @@ export default function LuminusParticles({ startDispersed = false, hideCursor = 
     async function init() {
       await loadLogo()
       createParticles()
+      createFillParticles()
       animate(0)
     }
     init()

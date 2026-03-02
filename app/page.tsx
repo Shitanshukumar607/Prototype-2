@@ -14,7 +14,7 @@ const EventsSectionWrapper = dynamic(
 export default function Page() {
   return (
     <main className="relative" style={{ minHeight: "300vh" }}>
-      <div className="h-screen sticky top-0">
+      <div className="h-screen sticky top-0 z-10">
         <VercelLogoParticles />
       </div>
       <div className="mt-[20vh] relative z-20">

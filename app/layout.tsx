@@ -1,5 +1,6 @@
 import type { Metadata } from "next"
 import Image from "next/image"
+import Script from "next/script"
 import { GeistSans } from "geist/font/sans"
 import { GeistMono } from "geist/font/mono"
 
@@ -30,6 +31,37 @@ export default function RootLayout({
       className={`${GeistSans.variable} ${GeistMono.variable}`}
     >
       <body suppressHydrationWarning className={`${GeistSans.className} antialiased text-white`}>
+        <Script id="chunk-load-recovery" strategy="beforeInteractive">
+          {`
+            (function () {
+              if (typeof window === "undefined") return;
+              var KEY = "__chunk_reload_once__";
+              function recover(reason) {
+                try {
+                  if (sessionStorage.getItem(KEY) === "1") return;
+                  sessionStorage.setItem(KEY, "1");
+                } catch (e) {}
+                console.warn("Recovering from chunk load failure:", reason);
+                window.location.reload();
+              }
+
+              window.addEventListener("error", function (event) {
+                var msg = String((event && event.message) || "");
+                if (msg.includes("ChunkLoadError") || msg.includes("Loading chunk")) recover(msg);
+              });
+
+              window.addEventListener("unhandledrejection", function (event) {
+                var reason = event && event.reason;
+                var text = String((reason && (reason.message || reason)) || "");
+                if (text.includes("ChunkLoadError") || text.includes("Loading chunk")) recover(text);
+              });
+
+              window.addEventListener("load", function () {
+                try { sessionStorage.removeItem(KEY); } catch (e) {}
+              });
+            })();
+          `}
+        </Script>
         <ThemeProvider
           attribute="class"
           defaultTheme="system"

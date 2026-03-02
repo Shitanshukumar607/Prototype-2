@@ -166,8 +166,8 @@ export default function EventsSection({ scrollProgress }: EventsSectionProps) {
           to   { stroke-dashoffset: 0; }
         }
         .hex-g { cursor: pointer; }
-        .hex-g:hover .hex-bg { fill: rgba(255,255,255,0.04); }
-        .jump-pill:hover { background: rgba(255,255,255,0.06) !important; color: rgba(255,255,255,0.7) !important; }
+        .hex-g:hover .hex-bg { fill: rgba(255,255,255,0.1); }
+        .jump-pill:hover { background: rgba(255,255,255,0.12) !important; color: rgba(255,255,255,0.9) !important; }
       `}</style>
 
       {/* ── TITLE ── */}
@@ -180,7 +180,7 @@ export default function EventsSection({ scrollProgress }: EventsSectionProps) {
         justifyContent: "space-between",
         flexDirection: isMobile ? "column" : "row",
         gap: 16,
-        borderBottom: "1px solid rgba(255,255,255,0.08)",
+        borderBottom: "1px solid rgba(255,255,255,0.18)",
         marginBottom: isMobile ? 32 : 48,
       }}>
         <h2 style={{
@@ -191,15 +191,16 @@ export default function EventsSection({ scrollProgress }: EventsSectionProps) {
           lineHeight: 0.9,
           fontSize: "clamp(3.2rem, 8vw, 6rem)",
           color: "white",
+          textShadow: "0 6px 18px rgba(0,0,0,0.5)",
         }}>
           EVENT<br />
-          <span style={{ color: "rgba(255,255,255,0.18)", WebkitTextStroke: "1px rgba(255,255,255,0.3)" }}>
+          <span style={{ color: "rgba(255,255,255,0.5)", WebkitTextStroke: "1px rgba(255,255,255,0.45)" }}>
             GRID
           </span>
         </h2>
 
         <div style={{ textAlign: isMobile ? "left" : "right", flexShrink: 0 }}>
-          <p style={{ margin: 0, color: "rgba(255,255,255,0.22)", fontSize: 11, fontFamily: "monospace", letterSpacing: "0.2em", lineHeight: 2 }}>
+          <p style={{ margin: 0, color: "rgba(255,255,255,0.8)", fontSize: 12, fontFamily: "monospace", letterSpacing: "0.2em", lineHeight: 2 }}>
             8 CATEGORIES<br />28+ EVENTS
           </p>
         </div>
@@ -261,8 +262,8 @@ export default function EventsSection({ scrollProgress }: EventsSectionProps) {
                     className="hex-bg"
                     d={hexPath(x, y, hexR - 2)}
                     fill={active ? cat.color : "transparent"}
-                    stroke={active ? cat.color : "rgba(255,255,255,0.12)"}
-                    strokeWidth={active ? 0 : 1}
+                    stroke={active ? cat.color : "rgba(255,255,255,0.62)"}
+                    strokeWidth={active ? 0 : 1.5}
                     style={{ transition: "fill 0.25s ease, stroke 0.25s ease" }}
                   />
 
@@ -295,7 +296,7 @@ export default function EventsSection({ scrollProgress }: EventsSectionProps) {
                       <Icon style={{
                         width: iconSz,
                         height: iconSz,
-                        color: active ? "rgba(0,0,0,0.75)" : "rgba(255,255,255,0.28)",
+                        color: active ? "rgba(0,0,0,0.75)" : "rgba(255,255,255,0.9)",
                         display: "block",
                         transition: "color 0.25s ease",
                       }} />
@@ -306,8 +307,8 @@ export default function EventsSection({ scrollProgress }: EventsSectionProps) {
                   <text
                     x={x} y={y + (isMobile ? 13 : 17)}
                     textAnchor="middle"
-                    fill={active ? "rgba(0,0,0,0.65)" : "rgba(255,255,255,0.25)"}
-                    fontSize={isMobile ? 6 : 7.5}
+                    fill={active ? "rgba(0,0,0,0.7)" : "rgba(255,255,255,0.95)"}
+                    fontSize={isMobile ? 6.8 : 8.5}
                     fontFamily="monospace"
                     fontWeight={700}
                     letterSpacing="0.08em"
@@ -320,15 +321,15 @@ export default function EventsSection({ scrollProgress }: EventsSectionProps) {
                   <circle
                     cx={x + hexR * 0.58} cy={y - hexR * 0.58}
                     r={isMobile ? 8.5 : 10.5}
-                    fill={active ? "rgba(0,0,0,0.2)" : "#111"}
-                    stroke={active ? "rgba(0,0,0,0.15)" : "rgba(255,255,255,0.08)"}
+                    fill={active ? "rgba(0,0,0,0.3)" : "rgba(5,8,18,0.96)"}
+                    stroke={active ? "rgba(0,0,0,0.15)" : "rgba(255,255,255,0.36)"}
                     strokeWidth={1}
                     style={{ transition: "all 0.25s ease" }}
                   />
                   <text
                     x={x + hexR * 0.58} y={y - hexR * 0.58 + 4}
                     textAnchor="middle"
-                    fill={active ? "rgba(0,0,0,0.6)" : "rgba(255,255,255,0.3)"}
+                    fill={active ? "rgba(0,0,0,0.82)" : "rgba(255,255,255,0.98)"}
                     fontSize={isMobile ? 7 : 8.5}
                     fontFamily="monospace"
                     fontWeight={800}
@@ -366,7 +367,7 @@ export default function EventsSection({ scrollProgress }: EventsSectionProps) {
             <span style={{
               fontFamily: "monospace",
               fontSize: 11,
-              color: "rgba(255,255,255,0.25)",
+              color: "rgba(255,255,255,0.9)",
               letterSpacing: "0.2em",
             }}>
               {selectedCat.index}
@@ -380,6 +381,7 @@ export default function EventsSection({ scrollProgress }: EventsSectionProps) {
               letterSpacing: "-0.02em",
               lineHeight: 1,
               flex: 1,
+              textShadow: "0 2px 10px rgba(0,0,0,0.6)",
             }}>
               {selectedCat.title}
             </h3>
@@ -408,15 +410,15 @@ export default function EventsSection({ scrollProgress }: EventsSectionProps) {
                   alignItems: "center",
                   gap: 16,
                   padding: "14px 0",
-                  borderBottom: "1px solid rgba(255,255,255,0.06)",
+                  borderBottom: "1px solid rgba(255,255,255,0.14)",
                   animation: `item-in 0.3s ease ${i * 0.05}s both`,
                 }}
               >
                 {/* Number */}
                 <span style={{
                   fontFamily: "monospace",
-                  fontSize: 10,
-                  color: "rgba(255,255,255,0.18)",
+                  fontSize: 11,
+                  color: "rgba(255,255,255,0.9)",
                   letterSpacing: "0.1em",
                   width: 20,
                   flexShrink: 0,
@@ -438,10 +440,11 @@ export default function EventsSection({ scrollProgress }: EventsSectionProps) {
                 <span style={{
                   flex: 1,
                   fontFamily: "'Palatino Linotype', 'Book Antiqua', Georgia, serif",
-                  fontSize: isMobile ? 14 : 16,
+                  fontSize: isMobile ? 15 : 17,
                   fontWeight: ev.flagship ? 600 : 400,
-                  color: ev.flagship ? "white" : "rgba(255,255,255,0.38)",
+                  color: ev.flagship ? "white" : "rgba(255,255,255,0.95)",
                   letterSpacing: "0.01em",
+                  textShadow: "0 1px 8px rgba(0,0,0,0.6)",
                   transition: "color 0.3s",
                 }}>
                   {ev.name}
@@ -469,17 +472,18 @@ export default function EventsSection({ scrollProgress }: EventsSectionProps) {
             gap: 24,
             marginTop: 20,
             paddingTop: 16,
+            borderTop: "1px solid rgba(255,255,255,0.12)",
           }}>
             <span style={{
-              fontFamily: "monospace", fontSize: 9,
-              color: "rgba(255,255,255,0.2)", letterSpacing: "0.2em",
+              fontFamily: "monospace", fontSize: 11,
+              color: "rgba(255,255,255,0.88)", letterSpacing: "0.18em",
             }}>
               {selectedCat.events.length} EVENT{selectedCat.events.length !== 1 ? "S" : ""}
             </span>
             {selectedCat.events.filter(e => e.flagship).length > 0 && (
               <span style={{
-                fontFamily: "monospace", fontSize: 9,
-                color: "rgba(255,255,255,0.2)", letterSpacing: "0.2em",
+                fontFamily: "monospace", fontSize: 11,
+                color: "rgba(255,255,255,0.88)", letterSpacing: "0.18em",
               }}>
                 {selectedCat.events.filter(e => e.flagship).length} FLAGSHIP
               </span>
@@ -499,7 +503,7 @@ export default function EventsSection({ scrollProgress }: EventsSectionProps) {
             gap: 6,
             marginTop: 28,
             paddingTop: 20,
-            borderTop: "1px solid rgba(255,255,255,0.06)",
+            borderTop: "1px solid rgba(255,255,255,0.14)",
           }}>
             {CATEGORIES.map(cat => {
               const active = selected === cat.id
@@ -509,14 +513,14 @@ export default function EventsSection({ scrollProgress }: EventsSectionProps) {
                   className="jump-pill"
                   onClick={() => handleSelect(cat.id)}
                   style={{
-                    padding: "5px 12px",
+                    padding: "6px 12px",
                     borderRadius: 2,
                     border: active
                       ? `1px solid ${cat.color}`
-                      : "1px solid rgba(255,255,255,0.08)",
+                      : "1px solid rgba(255,255,255,0.36)",
                     background: active ? cat.color : "transparent",
-                    color: active ? "rgba(0,0,0,0.75)" : "rgba(255,255,255,0.28)",
-                    fontSize: 8.5,
+                    color: active ? "rgba(0,0,0,0.78)" : "rgba(255,255,255,0.95)",
+                    fontSize: 10,
                     fontFamily: "monospace",
                     letterSpacing: "0.12em",
                     fontWeight: active ? 700 : 400,
@@ -535,7 +539,7 @@ export default function EventsSection({ scrollProgress }: EventsSectionProps) {
             display: "grid",
             gridTemplateColumns: "repeat(3, 1fr)",
             marginTop: 20,
-            borderTop: "1px solid rgba(255,255,255,0.06)",
+            borderTop: "1px solid rgba(255,255,255,0.14)",
             opacity: sp > 0.4 ? 1 : 0,
             transform: sp > 0.4 ? "translateY(0)" : "translateY(8px)",
             transition: "opacity 0.5s ease, transform 0.5s ease",
@@ -548,7 +552,7 @@ export default function EventsSection({ scrollProgress }: EventsSectionProps) {
               <div key={i} style={{
                 padding: "16px 0",
                 textAlign: i === 0 ? "left" : i === 2 ? "right" : "center",
-                borderRight: i < 2 ? "1px solid rgba(255,255,255,0.06)" : "none",
+                borderRight: i < 2 ? "1px solid rgba(255,255,255,0.14)" : "none",
               }}>
                 <div style={{
                   color: "white",
@@ -557,12 +561,13 @@ export default function EventsSection({ scrollProgress }: EventsSectionProps) {
                   fontFamily: "'Palatino Linotype', Georgia, serif",
                   lineHeight: 1,
                   letterSpacing: "-0.02em",
+                  textShadow: "0 2px 10px rgba(0,0,0,0.55)",
                 }}>
                   {s.n}
                 </div>
                 <div style={{
-                  color: "rgba(255,255,255,0.2)",
-                  fontSize: 8,
+                  color: "rgba(255,255,255,0.86)",
+                  fontSize: 10,
                   letterSpacing: "0.2em",
                   marginTop: 5,
                   fontFamily: "monospace",

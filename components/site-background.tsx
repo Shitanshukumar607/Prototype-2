@@ -18,8 +18,8 @@ export function SiteBackground() {
             ticking = true;
             requestAnimationFrame(() => {
                 const scrollY = window.scrollY;
-                const startFade = 100;
-                const endFade = 600;
+                const startFade = 80;
+                const endFade = 900;
                 if (scrollY <= startFade) {
                     setFadeOpacity(0);
                 } else if (scrollY >= endFade) {
@@ -56,7 +56,7 @@ export function SiteBackground() {
             {/* Floating 3D Objects */}
             <RandomObjects />
 
-            {/* Scroll-triggered Black Overlay — disabled on events so floating objects stay visible */}
+            {/* Scroll-triggered Black Overlay — fades in on scroll so purplish theme vanishes; particle canvas (z-10) stays on top */}
             <div
                 className="pointer-events-none fixed inset-0 w-full h-[100vh] bg-black z-[2]"
                 style={{ opacity: isEventsPage ? 0 : fadeOpacity }}
