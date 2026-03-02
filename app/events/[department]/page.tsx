@@ -39,7 +39,7 @@ export default async function DepartmentEventsPage({ params }: PageProps) {
           {dept.events.length} event{dept.events.length !== 1 ? "s" : ""} in this department.
         </p>
         <div className="space-y-6">
-          {dept.events.map((ev) => {
+          {dept.events.map((ev, eventIndex) => {
             const primaryContact = ev.contacts?.[0]
             return (
               <Card
@@ -82,7 +82,9 @@ export default async function DepartmentEventsPage({ params }: PageProps) {
                   </div>
                   <div className="pt-1">
                     <EventRegisterDialog
+                      departmentId={dept.id}
                       departmentName={dept.fullName ?? dept.name}
+                      eventKey={`${dept.id}:${eventIndex + 1}`}
                       eventName={ev.name}
                       teamSize={ev.teamSize}
                       registrationFee={ev.registrationFee}

@@ -15,7 +15,9 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 
 interface EventRegisterDialogProps {
+  departmentId: string
   departmentName: string
+  eventKey: string
   eventName: string
   teamSize: string
   registrationFee?: number
@@ -57,13 +59,16 @@ function parseTeamSize(teamSize: string): { min: number; max: number } {
 }
 
 export function EventRegisterDialog({
+  departmentId,
   departmentName,
+  eventKey,
   eventName,
   teamSize,
   registrationFee,
 }: EventRegisterDialogProps) {
   const [open, setOpen] = useState(false)
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
+  const [isSubmitting, setIsSubmitting] = useState(false)
   const { min, max } = useMemo(() => parseTeamSize(teamSize), [teamSize])
   const [participantSlots, setParticipantSlots] = useState<number[]>(
     Array.from({ length: min }, (_, i) => i + 1)
@@ -84,6 +89,7 @@ export function EventRegisterDialog({
         setOpen(next)
         if (!next) {
           setErrorMessage(null)
+          setIsSubmitting(false)
         }
       }}
     >
@@ -112,7 +118,7 @@ export function EventRegisterDialog({
 
         <div className="max-h-[72vh] overflow-y-auto no-scrollbar bg-[#050505]/95 rounded-b-3xl">
           <form
-            onSubmit={(e) => {
+            onSubmit={async (e) => {
               const form = e.currentTarget as HTMLFormElement
               if (!form.checkValidity()) {
                 e.preventDefault()
@@ -122,7 +128,88 @@ export function EventRegisterDialog({
               }
               e.preventDefault()
               setErrorMessage(null)
-              // TODO: hook this up to real submission or payment later
+              const formData = new FormData(form)
+              const payloadParticipants: Array<{
+                participantNumber: number
+                name: string
+                collegeName: string
+                studentId: string
+                email: string
+                phoneNumber: string
+              }> = []
+
+              for (const memberIndex of participantSlots) {
+                const name = String(formData.get(`name${memberIndex}`) ?? "").trim()
+                const collegeName = String(formData.get(`college${memberIndex}`) ?? "").trim()
+                const studentId = String(formData.get(`studentId${memberIndex}`) ?? "").trim()
+                const email = String(formData.get(`email${memberIndex}`) ?? "").trim()
+                const phoneNumber = String(formData.get(`phone${memberIndex}`) ?? "").trim()
+
+                const fields = [name, collegeName, studentId, email, phoneNumber]
+                const hasAnyValue = fields.some((value) => value.length > 0)
+                const allFilled = fields.every((value) => value.length > 0)
+                const requiredParticipant = memberIndex <= min
+
+                if (requiredParticipant || hasAnyValue) {
+                  if (!allFilled) {
+                    setErrorMessage(
+                      `Please complete all fields for Participant ${memberIndex} or clear that participant.`
+                    )
+                    return
+                  }
+                  payloadParticipants.push({
+                    participantNumber: memberIndex,
+                    name,
+                    collegeName,
+                    studentId,
+                    email,
+                    phoneNumber,
+                  })
+                }
+              }
+
+              if (payloadParticipants.length < min) {
+                setErrorMessage(`Please add details for at least ${min} participants.`)
+                return
+              }
+
+              try {
+                setIsSubmitting(true)
+                const response = await fetch("/api/event-registrations", {
+                  method: "POST",
+                  headers: {
+                    "Content-Type": "application/json",
+                  },
+                  body: JSON.stringify({
+                    departmentId,
+                    departmentName,
+                    eventKey,
+                    eventName,
+                    teamSize,
+                    registrationFee: registrationFee ?? null,
+                    participants: payloadParticipants,
+                  }),
+                })
+
+                if (!response.ok) {
+                  const responseBody = await response.json().catch(() => null)
+                  const message =
+                    typeof responseBody?.error === "string"
+                      ? responseBody.error
+                      : "Unable to submit registration right now. Please try again."
+                  setErrorMessage(message)
+                  return
+                }
+
+                form.reset()
+                setCollegeValues({})
+                setParticipantSlots(Array.from({ length: min }, (_, i) => i + 1))
+                setOpen(false)
+              } catch {
+                setErrorMessage("Unable to submit registration right now. Please try again.")
+              } finally {
+                setIsSubmitting(false)
+              }
             }}
             className="space-y-5 text-sm px-6 pb-5 pt-4"
           >
@@ -292,9 +379,10 @@ export function EventRegisterDialog({
               <div className="flex w-full justify-end">
                 <Button
                   type="submit"
+                  disabled={isSubmitting}
                   className="h-10 rounded-full bg-amber-400 px-5 text-black font-semibold shadow-[0_10px_30px_rgba(251,191,36,0.3)] transition-all hover:-translate-y-0.5 hover:bg-amber-300"
                 >
-                  Pay now
+                  {isSubmitting ? "Submitting..." : "Pay now"}
                 </Button>
               </div>
             </DialogFooter>
