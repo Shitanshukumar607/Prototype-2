@@ -21,7 +21,7 @@ export default function LuminusParticles({ startDispersed = false, hideCursor = 
   useEffect(() => {
     const canvas = canvasRef.current!
     const ctx = canvas.getContext("2d")!
-    const isMobile = typeof window !== "undefined" ? window.innerWidth < 768 : false
+    const isMobileViewport = () => (typeof window !== "undefined" ? window.innerWidth < 768 : false)
     const useCustomCursor = hideCursor && typeof window !== "undefined" && window.matchMedia("(pointer:fine)").matches
     const hideDesktopScrollbar =
       typeof window !== "undefined" &&
@@ -40,7 +40,7 @@ export default function LuminusParticles({ startDispersed = false, hideCursor = 
     function createFillParticles() {
       const w = canvas.width
       const h = canvas.height
-      const count = isMobile
+      const count = isMobileViewport()
         ? Math.min(900, Math.floor((w * h) / (52 * 52)))
         : Math.min(2200, Math.floor((w * h) / (36 * 36)))
       fillParticles = []
@@ -60,7 +60,7 @@ export default function LuminusParticles({ startDispersed = false, hideCursor = 
     const resize = () => {
       const w = window.innerWidth
       const h = window.innerHeight
-      const dprCap = isMobile ? 1.6 : 2
+      const dprCap = isMobileViewport() ? 1.6 : 2
       const dpr = Math.min(typeof window !== "undefined" ? window.devicePixelRatio || 1 : 1, dprCap)
       canvas.width = w * dpr
       canvas.height = h * dpr
@@ -170,7 +170,7 @@ export default function LuminusParticles({ startDispersed = false, hideCursor = 
       if (!imageData) return
       const data = imageData.data
       particles = []
-      const gap = isMobile ? Math.max(3, particleGap) : Math.max(2, particleGap)
+      const gap = isMobileViewport() ? Math.max(3, particleGap) : Math.max(2, particleGap)
       for (let y = 0; y < canvas.height; y += gap) {
         for (let x = 0; x < canvas.width; x += gap) {
           const i = (y * canvas.width + x) * 4
