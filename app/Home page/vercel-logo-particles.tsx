@@ -110,12 +110,16 @@ export default function LuminusParticles({ startDispersed = false, hideCursor = 
     let particles: Particle[] = []
     let imageData: ImageData | null = null
     let scrollProgress = 0
+    let scrollVelocity = 0
+    let lastScrollY = 0
 
 
     const handleScroll = () => {
       if (startDispersed) return
       const doc = document.documentElement
       const max = doc.scrollHeight - window.innerHeight
+      scrollVelocity = Math.abs(window.scrollY - lastScrollY)
+      lastScrollY = window.scrollY
       scrollProgress = max > 0 ? Math.min(window.scrollY / max, 1) : 1
     }
     if (!startDispersed) {
@@ -317,17 +321,39 @@ export default function LuminusParticles({ startDispersed = false, hideCursor = 
           }
         }
 
-        p.vx += (targetX - p.x) * 0.08
-        p.vy += (targetY - p.y) * 0.08
+        p.vx += (targetX - p.x) * (0.16 + scrollVelocity * 0.024)
+        p.vy += (targetY - p.y) * (0.16 + scrollVelocity * 0.024)
         p.vx *= 0.7
         p.vy *= 0.7
         p.x += p.vx
         p.y += p.vy
 
+        scrollVelocity *= 0.85
+
         const twinkle = 0.6 + 0.4 * Math.sin(time * 0.003 + p.phase)
         const readabilityDim = 1 - 0.45 * scrollProgress
         ctx.fillStyle = `rgba(${Math.round(p.r)},${Math.round(p.g)},${Math.round(p.b)},${twinkle * readabilityDim})`
         ctx.fillRect(p.x, p.y, p.size, p.size)
+      }
+
+      // Draw text below the logo, fades as user scrolls
+      const textAlpha = Math.max(0, 1 - scrollProgress * 3)
+      if (textAlpha > 0) {
+        const centerX = canvas.width / 2
+        const centerY = canvas.height / 2 + canvas.height * 0.28
+        ctx.save()
+        ctx.globalAlpha = textAlpha
+        ctx.textAlign = "center"
+        const isMobile = window.innerWidth < 768
+        const fontSize = Math.round((isMobile ? 5 : 11) * dpr)
+        ctx.fillStyle = "rgba(255, 255, 255, 0.4)"
+        ctx.font = `500 ${fontSize}px sans-serif`
+        ctx.letterSpacing = `${Math.round(0.2 * fontSize)}px`
+        const lineH = (isMobile ? 10 : 20) * dpr
+        ctx.fillText("LUMINUS IS MORE THAN A TECH FEST — IT'S A CONVERGENCE OF THE BRIGHTEST", centerX, centerY)
+        ctx.fillText("MINDS, BOLDEST IDEAS, AND MOST DISRUPTIVE TECHNOLOGIES. FOR THREE DAYS,", centerX, centerY + lineH)
+        ctx.fillText("OUR CAMPUS TRANSFORMS INTO A LAUNCHPAD FOR INNOVATION.", centerX, centerY + lineH * 2)
+        ctx.restore()
       }
 
       if (hideCursor) {
