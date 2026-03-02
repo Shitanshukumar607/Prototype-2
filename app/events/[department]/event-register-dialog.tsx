@@ -132,7 +132,7 @@ export function EventRegisterDialog({
               </p>
               <div className="space-y-4">
               {participantSlots.map((memberIndex) => {
-              const required = true
+              const required = memberIndex <= min
               const nameId = `name${memberIndex}`
               const collegeId = `college${memberIndex}`
               const studentId = `studentId${memberIndex}`
