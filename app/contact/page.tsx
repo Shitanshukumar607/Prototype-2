@@ -11,8 +11,8 @@ import {
 
 const FAQ_ITEMS = [
   {
-    q: "When and where is Luminus Techfest held?",
-    a: "Luminus Techfest is held at RNSIT, Bengaluru. Check the Schedule page for exact dates and venue details for each event.",
+    q: "Will attendance be given?",
+    a: "Attendance will be given for all participants.",
   },
   {
     q: "How do I register for events?",
@@ -24,7 +24,7 @@ const FAQ_ITEMS = [
   },
   {
     q: "Is there a registration fee?",
-    a: "Registration details and any fees (if applicable) are mentioned per event on its card.",
+    a: "Registration details and any fees (if applicable) are mentioned for each event on its card.",
   },
   {
     q: "How can I get in touch with the organisers?",
@@ -33,6 +33,14 @@ const FAQ_ITEMS = [
   {
     q: "At what time will the events start?",
     a: "Timings for the events will be announced by the event coordinators",
+  },
+  {
+    q: "Will certificates be given?",
+    a: "Yes , e-certificates will be given to all participants.",
+  },
+  {
+    q: "Will students be given ID cards?",
+    a: "Participants of the grand hackathon will be given ID cards , others will be given QR codes that will act as their tickets",
   },
 ]
 
