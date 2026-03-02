@@ -243,7 +243,7 @@ export default function HackathonSection() {
               }}
             >
               <p className="tag-mono" style={{ fontSize: '9px', color: 'rgba(255,255,255,0.62)', textTransform: 'uppercase', letterSpacing: '0.15em', marginBottom: '0.6rem' }}>Team Size</p>
-              <p className="prize-number" style={{ fontSize: '2.5rem', color: '#fff', textShadow: '0 2px 10px rgba(0,0,0,0.5)' }}>2-5</p>
+              <p className="prize-number" style={{ fontSize: '2.5rem', color: '#fff', textShadow: '0 2px 10px rgba(0,0,0,0.5)' }}>2-4</p>
               <p className="tag-mono" style={{ fontSize: '10px', color: 'rgba(255,255,255,0.72)' }}>members</p>
             </div>
 
