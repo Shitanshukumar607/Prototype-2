@@ -137,7 +137,7 @@ export default function LuminusParticles({ startDispersed = false, hideCursor = 
       const rawProgress = max > 0 ? Math.min(window.scrollY / max, 1) : 1
       // Reach full dispersion earlier so the background is fully scattered
       // by the time the Hackathon section enters the viewport.
-      const dispersionEnd = isMobileViewport() ? 0.34 : 0.5
+      const dispersionEnd = isMobileViewport() ? 0.22 : 0.5
       scrollProgress = Math.min(rawProgress / dispersionEnd, 1)
     }
     if (!startDispersed) {
@@ -339,10 +339,11 @@ export default function LuminusParticles({ startDispersed = false, hideCursor = 
           }
         }
 
-        p.vx += (targetX - p.x) * (0.16 + scrollVelocity * 0.024)
-        p.vy += (targetY - p.y) * (0.16 + scrollVelocity * 0.024)
-        p.vx *= 0.7
-        p.vy *= 0.7
+        const spring = isMobileViewport() ? 0.26 + scrollVelocity * 0.036 : 0.16 + scrollVelocity * 0.024
+        p.vx += (targetX - p.x) * spring
+        p.vy += (targetY - p.y) * spring
+        p.vx *= isMobileViewport() ? 0.65 : 0.7
+        p.vy *= isMobileViewport() ? 0.65 : 0.7
         p.x += p.vx
         p.y += p.vy
 
@@ -363,18 +364,14 @@ export default function LuminusParticles({ startDispersed = false, hideCursor = 
         ctx.save()
         ctx.globalAlpha = textAlpha
         ctx.textAlign = "center"
-        const fontSize = Math.round((isMobile ? 14 : 11) * dpr)
-        const lineH = (isMobile ? 18 : 20) * dpr
+        const fontSize = Math.round((isMobile ? 12 : 11) * dpr)
+        const lineH = (isMobile ? 20 : 20) * dpr
         const lines = isMobile
           ? [
-              "Luminus 2026 marks a new beginning at RNSIT,",
-              "the first national-level intercollegiate",
-              "tech fest launched in its landmark 25th year.",
-              "More than an event, it starts a legacy of",
-              "innovation, ambition, and bold ideas.",
-              "With 2,000+ students nationwide, it brings",
-              "technical and interdisciplinary challenges",
-              "to help you compete, learn, and shine.",
+              "LUMINUS 2026 MARKS A NEW BEGINNING AT RNSIT,",
+              "THE FIRST NATIONAL-LEVEL INTERCOLLEGIATE",
+              "TECH FEST IN ITS LANDMARK 25TH YEAR.",
+              "2,000+ STUDENTS. BOLD IDEAS. ONE STAGE.",
             ]
           : [
               "LUMINUS 2026 IS RNSIT'S FIRST NATIONAL-LEVEL INTERCOLLEGIATE TECH FEST,",
@@ -383,18 +380,9 @@ export default function LuminusParticles({ startDispersed = false, hideCursor = 
               "CHALLENGES THAT INSPIRE YOU TO COMPETE, GROW, AND SHINE.",
             ]
 
-        if (isMobile) {
-          const padY = 10 * dpr
-          const blockH = lineH * lines.length + padY * 2
-          ctx.fillStyle = "rgba(0,0,0,0.35)"
-          ctx.fillRect(0, centerY - padY - lineH * 0.9, canvas.width, blockH)
-        }
-
-        ctx.fillStyle = isMobile ? "rgba(255, 255, 255, 0.86)" : "rgba(255, 255, 255, 0.4)"
-        ctx.font = isMobile
-          ? `600 ${fontSize}px "Geist Sans", "Segoe UI", sans-serif`
-          : `500 ${fontSize}px "Geist Mono", "JetBrains Mono", "SF Mono", Menlo, monospace`
-        ctx.letterSpacing = `${Math.round((isMobile ? 0.04 : 0.2) * fontSize)}px`
+        ctx.fillStyle = "rgba(255, 255, 255, 0.38)"
+        ctx.font = `500 ${fontSize}px "Space Mono", "JetBrains Mono", "SF Mono", Menlo, monospace`
+        ctx.letterSpacing = `${Math.round(0.18 * fontSize)}px`
 
         lines.forEach((line, idx) => {
           ctx.fillText(line, centerX, centerY + lineH * idx)

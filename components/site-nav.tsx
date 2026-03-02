@@ -71,6 +71,9 @@ export function SiteNav() {
   } | null>(null)
 
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+  const [isMobileSearchOpen, setIsMobileSearchOpen] = useState(false)
+  const [mobileSearchQuery, setMobileSearchQuery] = useState("")
+  const mobileSearchInputRef = useRef<HTMLInputElement>(null)
   const [isSearchOpen, setIsSearchOpen] = useState(false)
   const [searchQuery, setSearchQuery] = useState("")
   const [selectedIndex, setSelectedIndex] = useState(-1)
@@ -96,6 +99,13 @@ export function SiteNav() {
       return () => clearTimeout(t)
     }
   }, [isSearchOpen])
+
+  useEffect(() => {
+    if (isMobileSearchOpen) {
+      const t = setTimeout(() => mobileSearchInputRef.current?.focus(), 60)
+      return () => clearTimeout(t)
+    }
+  }, [isMobileSearchOpen])
 
   const activeIndex = navItems.findIndex(({ href }) =>
     href === "/" ? pathname === "/" : pathname.startsWith(href)
@@ -361,46 +371,181 @@ export function SiteNav() {
         />
       )}
 
-      {/* Mobile Navigation (Hamburger Menu) */}
+      {/* Mobile Navigation */}
       <div className="md:hidden">
-        {/* Fullscreen Menu Overlay */}
+
+        {/* Bottom sheet backdrop */}
         <div
           className={cn(
-            "fixed inset-0 z-40 flex flex-col items-center justify-center bg-black/95 backdrop-blur-xl transition-all duration-300",
-            isMobileMenuOpen ? "opacity-100 visible" : "opacity-0 invisible pointer-events-none"
+            "fixed inset-0 z-40 transition-all duration-300",
+            isMobileMenuOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
           )}
+          style={{ background: "rgba(0,0,0,0.45)", backdropFilter: isMobileMenuOpen ? "blur(4px)" : "none" }}
+          onClick={() => setIsMobileMenuOpen(false)}
+          aria-hidden
+        />
+
+        {/* Bottom sheet */}
+        <div
+          className="fixed bottom-0 left-0 right-0 z-50"
+          style={{
+            transform: isMobileMenuOpen ? "translateY(0)" : "translateY(105%)",
+            transition: "transform 420ms cubic-bezier(0.32,0.72,0,1)",
+          }}
         >
-          <div className="flex flex-col items-center gap-8">
-            {navItems.map(({ href, label }) => {
-              const isActive = href === "/" ? pathname === "/" : pathname.startsWith(href)
-              return (
-                <Link
-                  key={href}
-                  href={href}
-                  onClick={() => setIsMobileMenuOpen(false)}
-                  className={cn(
-                    "text-2xl font-medium tracking-wide transition-all duration-200",
-                    isActive ? "text-white scale-110" : "text-white/60 hover:text-white"
-                  )}
-                >
-                  {label}
-                  {isActive && (
-                    <span className="block h-1 w-full bg-purple-500/80 rounded-full mt-2 mx-auto" aria-hidden />
-                  )}
-                </Link>
-              )
-            })}
+          <div
+            className="rounded-t-3xl overflow-hidden"
+            style={{
+              background: "rgba(6,7,18,0.92)",
+              borderTop: "1px solid rgba(255,255,255,0.08)",
+              borderLeft: "1px solid rgba(255,255,255,0.06)",
+              borderRight: "1px solid rgba(255,255,255,0.06)",
+              backdropFilter: "blur(32px)",
+              boxShadow: "0 -16px 48px rgba(0,0,0,0.6), 0 -1px 0 rgba(168,85,247,0.08)",
+            }}
+          >
+            {/* Handle */}
+            <div className="flex justify-center pt-3.5 pb-2">
+              <div className="h-[3px] w-9 rounded-full bg-white/20" />
+            </div>
+
+            {/* Nav links */}
+            <div className="px-4 pb-8 pt-2 flex flex-col gap-1">
+              {navItems.map(({ href, label }) => {
+                const isActive = href === "/" ? pathname === "/" : pathname.startsWith(href)
+                return (
+                  <Link
+                    key={href}
+                    href={href}
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className={cn(
+                      "relative flex items-center justify-between px-4 py-3.5 rounded-2xl text-[15px] font-medium transition-colors duration-150",
+                      isActive
+                        ? "text-white"
+                        : "text-white/45 active:bg-white/[0.05]"
+                    )}
+                    style={isActive ? { background: "rgba(168,85,247,0.09)" } : {}}
+                  >
+                    <span>{label}</span>
+                    {isActive && (
+                      <span
+                        className="h-2 w-2 rounded-full shrink-0"
+                        style={{ background: "rgba(192,132,252,0.9)", boxShadow: "0 0 6px rgba(168,85,247,0.6)" }}
+                        aria-hidden
+                      />
+                    )}
+                  </Link>
+                )
+              })}
+            </div>
           </div>
         </div>
 
-        {/* Floating Action Button (Hamburger Toggle) */}
-        <button
-          onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-          className="fixed bottom-6 right-6 z-50 flex h-14 w-14 items-center justify-center rounded-full border border-white/10 bg-white/10 text-white shadow-[0_0_20px_rgba(0,0,0,0.4)] backdrop-blur-xl transition-transform active:scale-90"
-          aria-label="Toggle mobile menu"
+        {/* Search sheet backdrop */}
+        <div
+          className={cn(
+            "fixed inset-0 z-40 transition-all duration-300",
+            isMobileSearchOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
+          )}
+          style={{ background: "rgba(0,0,0,0.45)", backdropFilter: isMobileSearchOpen ? "blur(4px)" : "none" }}
+          onClick={() => { setIsMobileSearchOpen(false); setMobileSearchQuery("") }}
+          aria-hidden
+        />
+
+        {/* Search bottom sheet */}
+        <div
+          className="fixed bottom-0 left-0 right-0 z-50"
+          style={{
+            transform: isMobileSearchOpen ? "translateY(0)" : "translateY(105%)",
+            transition: "transform 420ms cubic-bezier(0.32,0.72,0,1)",
+          }}
         >
-          {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
-        </button>
+          <div
+            className="rounded-t-3xl overflow-hidden"
+            style={{
+              background: "rgba(6,7,18,0.92)",
+              borderTop: "1px solid rgba(255,255,255,0.08)",
+              borderLeft: "1px solid rgba(255,255,255,0.06)",
+              borderRight: "1px solid rgba(255,255,255,0.06)",
+              backdropFilter: "blur(32px)",
+              boxShadow: "0 -16px 48px rgba(0,0,0,0.6), 0 -1px 0 rgba(168,85,247,0.08)",
+            }}
+          >
+            {/* Handle */}
+            <div className="flex justify-center pt-3.5 pb-2">
+              <div className="h-[3px] w-9 rounded-full bg-white/20" />
+            </div>
+
+            {/* Search input */}
+            <div className="mx-4 mt-2 mb-3 flex items-center gap-3 rounded-2xl px-4 py-3" style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.08)" }}>
+              <Search size={16} className="text-white/35 shrink-0" />
+              <input
+                ref={mobileSearchInputRef}
+                type="text"
+                value={mobileSearchQuery}
+                onChange={(e) => setMobileSearchQuery(e.target.value)}
+                placeholder="Search events..."
+                className="flex-1 bg-transparent text-[15px] text-white placeholder:text-white/30 outline-none"
+                autoComplete="off"
+              />
+              {mobileSearchQuery && (
+                <button onClick={() => setMobileSearchQuery("")} className="text-white/35 active:text-white transition-colors shrink-0">
+                  <X size={15} />
+                </button>
+              )}
+            </div>
+
+            {/* Results */}
+            <div className="overflow-y-auto max-h-[55vh] pb-8">
+              {getSearchResults(mobileSearchQuery).map((result) => (
+                <button
+                  key={`${result.url}-${result.label}`}
+                  onClick={() => { navigateTo(result.url); setIsMobileSearchOpen(false); setMobileSearchQuery("") }}
+                  className="w-full flex items-center gap-3 px-5 py-3.5 active:bg-white/[0.04] transition-colors"
+                  style={{ borderBottom: "1px solid rgba(255,255,255,0.05)" }}
+                >
+                  <Search size={13} className="text-white/25 shrink-0" />
+                  <div className="flex-1 min-w-0 text-left">
+                    <div className="text-white/90 text-sm font-medium truncate">{result.label}</div>
+                    <div className="text-white/35 text-xs mt-0.5">{result.sublabel}</div>
+                  </div>
+                  {result.isFlagship && (
+                    <span className="text-[9px] text-purple-400/80 border border-purple-400/30 rounded px-1.5 py-0.5 shrink-0 uppercase tracking-wider">Flagship</span>
+                  )}
+                  <ArrowUpRight size={13} className="text-white/20 shrink-0" />
+                </button>
+              ))}
+              {mobileSearchQuery.trim() !== "" && getSearchResults(mobileSearchQuery).length === 0 && (
+                <p className="text-white/30 text-sm text-center py-8">No results for &ldquo;{mobileSearchQuery}&rdquo;</p>
+              )}
+              {mobileSearchQuery.trim() === "" && (
+                <p className="text-white/20 text-xs text-center py-6 tracking-widest uppercase">Type to search events</p>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* Centered top pill — burger left, search right */}
+        <div className="fixed top-4 left-0 right-0 z-50 flex justify-center pointer-events-none">
+          <div className="pointer-events-auto flex items-center rounded-2xl border border-white/10 bg-white/[0.06] backdrop-blur-xl shadow-lg px-1.5 py-1.5 gap-0.5">
+            <button
+              onClick={() => { setIsMobileMenuOpen((v) => !v); setIsMobileSearchOpen(false) }}
+              className="flex h-8 w-8 items-center justify-center rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all duration-200 active:scale-90"
+              aria-label="Toggle mobile menu"
+            >
+              {isMobileMenuOpen ? <X size={18} /> : <Menu size={18} />}
+            </button>
+            <span className="text-white/20 text-xs leading-none select-none px-1" aria-hidden>|</span>
+            <button
+              onClick={() => { setIsMobileSearchOpen((v) => !v); setIsMobileMenuOpen(false) }}
+              className="flex h-8 w-8 items-center justify-center rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all duration-200 active:scale-90"
+              aria-label="Search"
+            >
+              {isMobileSearchOpen ? <X size={16} /> : <Search size={16} />}
+            </button>
+          </div>
+        </div>
+
       </div>
     </>
   )
