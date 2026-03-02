@@ -314,7 +314,7 @@ export default function HackathonSection() {
             {/* CTAs */}
             <div style={{ display: 'flex', flexDirection: isMobile ? 'row' : 'column', gap: '10px', background: 'transparent' }}>
               <a
-                href="/register"
+                href="/events/grand-hackathon"
                 className="register-btn btn-primary"
                 style={{
                   flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center',
@@ -332,7 +332,7 @@ export default function HackathonSection() {
                 <span className="arrow-icon" style={{ display: 'inline-block', transition: 'transform 0.2s' }}>→</span>
               </a>
               <a
-                href="/events"
+                href="/events/grand-hackathon"
                 style={{
                   flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center',
                   padding: isMobile ? '0 1rem' : '0 2rem', minHeight: isMobile ? '52px' : '64px',

@@ -134,7 +134,11 @@ export default function LuminusParticles({ startDispersed = false, hideCursor = 
       const max = doc.scrollHeight - window.innerHeight
       scrollVelocity = Math.abs(window.scrollY - lastScrollY)
       lastScrollY = window.scrollY
-      scrollProgress = max > 0 ? Math.min(window.scrollY / max, 1) : 1
+      const rawProgress = max > 0 ? Math.min(window.scrollY / max, 1) : 1
+      // Reach full dispersion earlier so the background is fully scattered
+      // by the time the Hackathon section enters the viewport.
+      const dispersionEnd = isMobileViewport() ? 0.34 : 0.5
+      scrollProgress = Math.min(rawProgress / dispersionEnd, 1)
     }
     if (!startDispersed) {
       scrollProgress = 0

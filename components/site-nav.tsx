@@ -4,7 +4,7 @@ import { useRef, useEffect, useState } from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { cn } from "@/lib/utils"
-import { Menu, X } from "lucide-react"
+import { Menu, Search, X } from "lucide-react"
 
 const navItems = [
   { href: "/", label: "Home" },
@@ -69,7 +69,7 @@ export function SiteNav() {
       {/* Desktop Navigation (Pill) */}
       <nav
         className={cn(
-          "hidden md:block fixed top-8 left-0 right-0 z-50 mx-auto w-fit max-w-[min(92vw,26rem)]",
+          "hidden md:block fixed top-8 left-0 right-0 z-50 mx-auto w-fit max-w-[min(94vw,40rem)]",
           "rounded-3xl",
           "border border-white/10",
           "bg-white/[0.03]",
@@ -110,8 +110,21 @@ export function SiteNav() {
         `}</style>
         <div
           ref={containerRef}
-          className="relative flex h-12 items-center justify-center gap-0.5 px-2 py-1.5"
+          className="relative flex h-12 items-center justify-center gap-1 px-2 py-1.5"
         >
+          {/* Left search bar */}
+          <label
+            className="relative z-10 mr-1 flex h-8 w-44 items-center rounded-xl border border-white/15 bg-black/20 px-2.5 text-white/70 focus-within:border-white/30 focus-within:bg-black/30"
+            aria-label="Search"
+          >
+            <Search size={14} className="shrink-0 text-white/55" />
+            <input
+              type="text"
+              placeholder="Search..."
+              className="ml-2 w-full bg-transparent text-xs text-white placeholder:text-white/40 outline-none"
+            />
+          </label>
+
           {/* Single sliding jelly pill */}
           {pillStyle && (
             <span
