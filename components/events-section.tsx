@@ -91,9 +91,8 @@ const CATEGORIES = BASE_CATEGORIES
     index: String(displayIndex + 1).padStart(2, "0"),
   }))
 
-// Display total number of events in the grid summary.
-// The current curated count is 26.
-const totalEvents = 26
+// Total number of events in all departments (keeps the summary accurate even if events change).
+const totalEvents = departments.reduce((acc, dept) => acc + dept.events.length, 0)
 const flagshipCount = departments.reduce(
   (acc, dept) => acc + dept.events.filter((ev) => ev.type === "Flagship" || ev.tag === "Grand Hackathon").length,
   0
