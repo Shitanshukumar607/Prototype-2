@@ -239,66 +239,70 @@ export default function HackathonSection() {
             <div
               className="stat-card"
               style={{
-                background: 'rgba(255,255,255,0.03)',
-                border: '1px solid rgba(255,255,255,0.07)',
-                borderTop: '1.5px solid rgba(255,255,255,0.2)',
+                background: 'rgba(8,10,18,0.62)',
+                border: '1px solid rgba(255,255,255,0.12)',
+                borderTop: '1.5px solid rgba(255,255,255,0.24)',
                 borderRadius: 16,
                 padding: isMobile ? '1rem 1rem' : '1.4rem 1.2rem',
-                backdropFilter: 'blur(12px)',
+                backdropFilter: 'blur(16px)',
+                boxShadow: '0 18px 44px rgba(0,0,0,0.35)',
               }}
             >
-              <p className="tag-mono" style={{ fontSize: '8px', color: 'rgba(255,255,255,0.35)', textTransform: 'uppercase', letterSpacing: '0.2em', marginBottom: '0.7rem' }}>Team Size</p>
-              <p className="prize-number" style={{ fontSize: '2.6rem', color: '#fff', lineHeight: 1, marginBottom: '0.3rem' }}>2-4</p>
-              <p className="tag-mono" style={{ fontSize: '9px', color: 'rgba(255,255,255,0.4)', letterSpacing: '0.1em' }}>members</p>
+              <p className="tag-mono" style={{ fontSize: '8px', color: 'rgba(255,255,255,0.58)', textTransform: 'uppercase', letterSpacing: '0.2em', marginBottom: '0.7rem' }}>Team Size</p>
+              <p className="prize-number" style={{ fontSize: '2.6rem', color: '#fff', lineHeight: 1, marginBottom: '0.3rem', textShadow: '0 2px 16px rgba(0,0,0,0.65)' }}>2-4</p>
+              <p className="tag-mono" style={{ fontSize: '9px', color: 'rgba(255,255,255,0.6)', letterSpacing: '0.1em' }}>members</p>
             </div>
 
             {/* Stat: Duration */}
             <div
               className="stat-card"
               style={{
-                background: 'rgba(255,255,255,0.03)',
-                border: '1px solid rgba(255,255,255,0.07)',
-                borderTop: '1.5px solid rgba(255,255,255,0.2)',
+                background: 'rgba(8,10,18,0.62)',
+                border: '1px solid rgba(255,255,255,0.12)',
+                borderTop: '1.5px solid rgba(255,255,255,0.24)',
                 borderRadius: 16,
                 padding: isMobile ? '1rem 1rem' : '1.4rem 1.2rem',
-                backdropFilter: 'blur(12px)',
+                backdropFilter: 'blur(16px)',
+                boxShadow: '0 18px 44px rgba(0,0,0,0.35)',
               }}
             >
-              <p className="tag-mono" style={{ fontSize: '8px', color: 'rgba(255,255,255,0.35)', textTransform: 'uppercase', letterSpacing: '0.2em', marginBottom: '0.7rem' }}>Duration</p>
-              <p className="prize-number" style={{ fontSize: '2.6rem', color: '#fff', lineHeight: 1, marginBottom: '0.3rem' }}>24</p>
-              <p className="tag-mono" style={{ fontSize: '9px', color: 'rgba(255,255,255,0.4)', letterSpacing: '0.1em' }}>hours</p>
+              <p className="tag-mono" style={{ fontSize: '8px', color: 'rgba(255,255,255,0.58)', textTransform: 'uppercase', letterSpacing: '0.2em', marginBottom: '0.7rem' }}>Duration</p>
+              <p className="prize-number" style={{ fontSize: '2.6rem', color: '#fff', lineHeight: 1, marginBottom: '0.3rem', textShadow: '0 2px 16px rgba(0,0,0,0.65)' }}>24</p>
+              <p className="tag-mono" style={{ fontSize: '9px', color: 'rgba(255,255,255,0.6)', letterSpacing: '0.1em' }}>hours</p>
             </div>
 
             {/* Stat: Mode */}
             <div
               className="stat-card"
               style={{
-                background: 'rgba(255,255,255,0.03)',
-                border: '1px solid rgba(255,255,255,0.07)',
-                borderTop: '1.5px solid rgba(255,255,255,0.2)',
+                background: 'rgba(8,10,18,0.62)',
+                border: '1px solid rgba(255,255,255,0.12)',
+                borderTop: '1.5px solid rgba(255,255,255,0.24)',
                 borderRadius: 16,
                 padding: isMobile ? '1rem 1rem' : '1.4rem 1.2rem',
-                backdropFilter: 'blur(12px)',
+                backdropFilter: 'blur(16px)',
+                boxShadow: '0 18px 44px rgba(0,0,0,0.35)',
               }}
             >
-              <p className="tag-mono" style={{ fontSize: '8px', color: 'rgba(255,255,255,0.35)', textTransform: 'uppercase', letterSpacing: '0.2em', marginBottom: '0.7rem' }}>Mode</p>
-              <p className="prize-number" style={{ fontSize: '2.6rem', color: '#fff', lineHeight: 1, marginBottom: '0.3rem' }}>LIVE</p>
-              <p className="tag-mono" style={{ fontSize: '9px', color: 'rgba(255,255,255,0.4)', letterSpacing: '0.1em' }}>in-person</p>
+              <p className="tag-mono" style={{ fontSize: '8px', color: 'rgba(255,255,255,0.58)', textTransform: 'uppercase', letterSpacing: '0.2em', marginBottom: '0.7rem' }}>Mode</p>
+              <p className="prize-number" style={{ fontSize: '2.6rem', color: '#fff', lineHeight: 1, marginBottom: '0.3rem', textShadow: '0 2px 16px rgba(0,0,0,0.65)' }}>LIVE</p>
+              <p className="tag-mono" style={{ fontSize: '9px', color: 'rgba(255,255,255,0.6)', letterSpacing: '0.1em' }}>in-person</p>
             </div>
 
             {/* Prize pool */}
             <div
               style={{
-                background: 'rgba(168,85,247,0.06)',
-                border: '1px solid rgba(168,85,247,0.15)',
-                borderTop: '1.5px solid rgba(168,85,247,0.5)',
+                background: 'linear-gradient(180deg, rgba(168,85,247,0.18) 0%, rgba(8,10,18,0.62) 100%)',
+                border: '1px solid rgba(168,85,247,0.22)',
+                borderTop: '1.5px solid rgba(192,132,252,0.62)',
                 borderRadius: 16,
                 padding: isMobile ? '1rem 1rem' : '1.4rem 1.4rem',
-                backdropFilter: 'blur(12px)',
+                backdropFilter: 'blur(16px)',
+                boxShadow: '0 18px 44px rgba(0,0,0,0.35)',
               }}
             >
-              <p className="tag-mono" style={{ fontSize: '8px', color: 'rgba(168,85,247,0.7)', textTransform: 'uppercase', letterSpacing: '0.2em', marginBottom: '0.7rem' }}>Total Prize Pool</p>
-              <p className="prize-number" style={{ fontSize: 'clamp(2rem, 3.8vw, 3rem)', color: '#c084fc', lineHeight: 1 }}>
+              <p className="tag-mono" style={{ fontSize: '8px', color: 'rgba(236,197,255,0.75)', textTransform: 'uppercase', letterSpacing: '0.2em', marginBottom: '0.7rem' }}>Total Prize Pool</p>
+              <p className="prize-number" style={{ fontSize: 'clamp(2rem, 3.8vw, 3rem)', color: 'rgba(236,197,255,0.95)', lineHeight: 1, textShadow: '0 0 22px rgba(192,132,252,0.24), 0 2px 18px rgba(0,0,0,0.7)' }}>
                 ₹1,20,000
               </p>
             </div>
@@ -329,14 +333,15 @@ export default function HackathonSection() {
                   flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center',
                   padding: isMobile ? '0 1.2rem' : '0 1.8rem', minHeight: isMobile ? '52px' : '64px',
                   borderRadius: 16,
-                  border: '1px solid rgba(255,255,255,0.1)',
-                  background: 'transparent', color: 'rgba(255,255,255,0.55)',
+                  border: '1px solid rgba(255,255,255,0.18)',
+                  background: 'rgba(255,255,255,0.06)',
+                  color: 'rgba(255,255,255,0.82)',
                   fontFamily: "'Space Mono', monospace", fontSize: '10px',
                   textTransform: 'uppercase', letterSpacing: '0.18em',
                   textDecoration: 'none', transition: 'color 0.25s, border-color 0.25s', whiteSpace: isMobile ? 'normal' : 'nowrap',
                 }}
-                onMouseEnter={e => { (e.currentTarget as HTMLElement).style.color = 'rgba(255,255,255,0.9)'; (e.currentTarget as HTMLElement).style.borderColor = 'rgba(255,255,255,0.25)'; }}
-                onMouseLeave={e => { (e.currentTarget as HTMLElement).style.color = 'rgba(255,255,255,0.55)'; (e.currentTarget as HTMLElement).style.borderColor = 'rgba(255,255,255,0.1)'; }}
+                onMouseEnter={e => { (e.currentTarget as HTMLElement).style.color = 'rgba(255,255,255,0.95)'; (e.currentTarget as HTMLElement).style.borderColor = 'rgba(255,255,255,0.26)'; (e.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,0.09)'; }}
+                onMouseLeave={e => { (e.currentTarget as HTMLElement).style.color = 'rgba(255,255,255,0.82)'; (e.currentTarget as HTMLElement).style.borderColor = 'rgba(255,255,255,0.18)'; (e.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,0.06)'; }}
               >
                 Details
               </a>
