@@ -1,8 +1,28 @@
+import type { Metadata } from "next"
 import Link from "next/link"
 import { departments } from "@/lib/events-data"
 import LuminusParticles from "../Home page/vercel-logo-particles"
 
 const GRAND_HACKATHON_ID = "grand-hackathon"
+
+export const metadata: Metadata = {
+  title: "Events · Luminus Techfest",
+  description:
+    "Browse all Luminus Techfest events by department — including Solaris X Grand Hackathon, flagship tracks, and minor events across AI, cybersecurity, data, hardware, gaming, and more.",
+  openGraph: {
+    title: "Events · Luminus Techfest",
+    description:
+      "Pick a department and explore detailed information for every Luminus Techfest event: team size, duration, prize pool, rules, and registration.",
+    images: [
+      {
+        url: "/og-luminus-2026.png",
+        width: 1230,
+        height: 630,
+        alt: "Luminus Techfest 2026 hero graphic",
+      },
+    ],
+  },
+}
 
 export default function EventsPage() {
   const grandHackathon = departments.find((d) => d.id === GRAND_HACKATHON_ID)

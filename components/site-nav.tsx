@@ -149,7 +149,7 @@ export function SiteNav() {
       {/* Desktop Navigation (Pill) */}
       <nav
         className={cn(
-          "hidden md:block fixed top-8 left-0 right-0 z-50 mx-auto",
+          "hidden md:block fixed top-8 left-0 right-0 z-50 mx-auto md:transform md:translate-x-4",
           "max-w-[94vw]",
           "rounded-3xl",
           "border border-white/10",

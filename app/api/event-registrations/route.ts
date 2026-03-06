@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server"
 import { z } from "zod"
 import { getSupabaseAdminClient } from "@/lib/supabase/server"
+import { getDepartmentById } from "@/lib/events-data"
 
 const participantSchema = z.object({
   participantNumber: z.number().int().positive(),
@@ -36,8 +37,30 @@ export async function POST(request: Request) {
       )
     }
 
-    const supabase = getSupabaseAdminClient()
     const payload = parsed.data
+
+    // Server-side guard: ensure the event exists and is open for registration,
+    // regardless of what the client sends.
+    const [eventDeptId, indexStr] = payload.eventKey.split(":")
+    const eventIndex = Number.parseInt(indexStr ?? "", 10) - 1
+    const sourceDept = eventDeptId ? getDepartmentById(eventDeptId) : undefined
+    const sourceEvent = sourceDept && eventIndex >= 0 ? sourceDept.events[eventIndex] : undefined
+
+    if (!sourceDept || !sourceEvent) {
+      return NextResponse.json(
+        { error: "Unknown event. Please refresh and try again." },
+        { status: 400 },
+      )
+    }
+
+    if (sourceEvent.registrationOpen === false) {
+      return NextResponse.json(
+        { error: "Registrations for this event are closed." },
+        { status: 403 },
+      )
+    }
+
+    const supabase = getSupabaseAdminClient()
 
     const { error } = await supabase.from("event_registrations").insert({
       department_id: payload.departmentId,
