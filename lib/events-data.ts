@@ -234,7 +234,7 @@ export const departments: DepartmentEvents[] = [
         registrationFee: 250,
         contacts: [
           { name: "Himanshu R Rathod", phone: "9035373935" },
-          { name: "Mayur Doddamani", phone: "8904745969" },
+          { name: "Bhagyashree Verma", phone: "9741441806" },
         ],
       },
       {

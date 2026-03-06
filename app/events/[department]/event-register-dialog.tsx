@@ -146,26 +146,23 @@ export function EventRegisterDialog({
                 const phoneNumber = String(formData.get(`phone${memberIndex}`) ?? "").trim()
 
                 const fields = [name, collegeName, studentId, email, phoneNumber]
-                const hasAnyValue = fields.some((value) => value.length > 0)
                 const allFilled = fields.every((value) => value.length > 0)
-                const requiredParticipant = memberIndex <= min
 
-                if (requiredParticipant || hasAnyValue) {
-                  if (!allFilled) {
-                    setErrorMessage(
-                      `Please complete all fields for Participant ${memberIndex} or clear that participant.`
-                    )
-                    return
-                  }
-                  payloadParticipants.push({
-                    participantNumber: memberIndex,
-                    name,
-                    collegeName,
-                    studentId,
-                    email,
-                    phoneNumber,
-                  })
+                // Every visible slot is mandatory
+                if (!allFilled) {
+                  setErrorMessage(
+                    `Please complete all fields for Participant ${memberIndex}.`
+                  )
+                  return
                 }
+                payloadParticipants.push({
+                  participantNumber: memberIndex,
+                  name,
+                  collegeName,
+                  studentId,
+                  email,
+                  phoneNumber,
+                })
               }
 
               if (payloadParticipants.length < min) {
@@ -205,6 +202,7 @@ export function EventRegisterDialog({
                 setCollegeValues({})
                 setParticipantSlots(Array.from({ length: min }, (_, i) => i + 1))
                 setOpen(false)
+                window.location.href = "https://payments.billdesk.com/bdcollect/bd/rnsiotec/6492"
               } catch {
                 setErrorMessage("Unable to submit registration right now. Please try again.")
               } finally {
@@ -219,7 +217,7 @@ export function EventRegisterDialog({
               </p>
               <div className="space-y-4">
               {participantSlots.map((memberIndex) => {
-              const required = memberIndex <= min
+              const required = true // all visible slots are mandatory; use "−" to remove optional ones
               const nameId = `name${memberIndex}`
               const collegeId = `college${memberIndex}`
               const studentId = `studentId${memberIndex}`
@@ -382,7 +380,7 @@ export function EventRegisterDialog({
                   disabled={isSubmitting}
                   className="h-10 rounded-full bg-amber-400 px-5 text-black font-semibold shadow-[0_10px_30px_rgba(251,191,36,0.3)] transition-all hover:-translate-y-0.5 hover:bg-amber-300"
                 >
-                  {isSubmitting ? "Submitting..." : "Pay now"}
+                  {isSubmitting ? "Saving & redirecting..." : "Pay now"}
                 </Button>
               </div>
             </DialogFooter>
