@@ -5,13 +5,13 @@ import event_logo from "../../assets/luminus_logo.png"
 interface LuminusParticlesProps {
   /** When true, particles start scattered (no scroll needed). Default false. */
   startDispersed?: boolean
-  /** When false, normal cursor is shown and no custom cursor/shockwaves. Default true. */
+  /** When false, normal cursor is shown and no custom cursor/shockwaves. Default false (disabled custom cursor). */
   hideCursor?: boolean
   /** Pixel step when sampling logo for particles; larger = fewer particles. Default 3. */
   particleGap?: number
 }
 
-export default function LuminusParticles({ startDispersed = false, hideCursor = true, particleGap = 3 }: LuminusParticlesProps) {
+export default function LuminusParticles({ startDispersed = false, hideCursor = false, particleGap = 3 }: LuminusParticlesProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const options = useMemo(
     () => ({ startDispersed, hideCursor, particleGap }),
@@ -368,17 +368,17 @@ export default function LuminusParticles({ startDispersed = false, hideCursor = 
         const lineH = (isMobile ? 20 : 20) * dpr
         const lines = isMobile
           ? [
-              "LUMINUS 2026 MARKS A NEW BEGINNING AT RNSIT,",
-              "THE FIRST NATIONAL-LEVEL INTERCOLLEGIATE",
-              "TECH FEST IN ITS LANDMARK 25TH YEAR.",
-              "2,000+ STUDENTS. BOLD IDEAS. ONE STAGE.",
-            ]
+            "LUMINUS 2026 MARKS A NEW BEGINNING AT RNSIT,",
+            "THE FIRST NATIONAL-LEVEL INTERCOLLEGIATE",
+            "TECH FEST IN ITS LANDMARK 25TH YEAR.",
+            "2,000+ STUDENTS. BOLD IDEAS. ONE STAGE.",
+          ]
           : [
-              "LUMINUS 2026 IS RNSIT'S FIRST NATIONAL-LEVEL INTERCOLLEGIATE TECH FEST,",
-              "LAUNCHED IN ITS LANDMARK 25TH YEAR TO BEGIN A LEGACY OF INNOVATION.",
-              "WITH 2,000+ STUDENTS NATIONWIDE, IT BLENDS TECHNICAL AND INTERDISCIPLINARY",
-              "CHALLENGES THAT INSPIRE YOU TO COMPETE, GROW, AND SHINE.",
-            ]
+            "LUMINUS 2026 IS RNSIT'S FIRST NATIONAL-LEVEL INTERCOLLEGIATE TECH FEST,",
+            "LAUNCHED IN ITS LANDMARK 25TH YEAR TO BEGIN A LEGACY OF INNOVATION.",
+            "WITH 2,000+ STUDENTS NATIONWIDE, IT BLENDS TECHNICAL AND INTERDISCIPLINARY",
+            "CHALLENGES THAT INSPIRE YOU TO COMPETE, GROW, AND SHINE.",
+          ]
 
         ctx.fillStyle = "rgba(255, 255, 255, 0.38)"
         const letterSpacingRatio = isMobile ? 0.08 : 0.18
@@ -448,7 +448,7 @@ export default function LuminusParticles({ startDispersed = false, hideCursor = 
         width: "100vw", height: "100vh",
         zIndex: 10,
         pointerEvents: "none",
-        cursor: hideCursor ? "none" : "default",
+        cursor: hideCursor ? "none" : "auto",
       }}
     />
   )

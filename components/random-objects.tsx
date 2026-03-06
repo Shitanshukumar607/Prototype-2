@@ -1,8 +1,8 @@
 "use client";
-
-import React, { Suspense, useEffect, useState, useMemo, useRef } from "react";
+import { AmbientLight, DirectionalLight } from "three";
+import React, { Suspense, useEffect, useState, useRef } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
-import { useGLTF } from "@react-three/drei";
+import { useGLTF, Clone, Preload } from "@react-three/drei";
 import * as THREE from "three";
 
 const MODEL_PATHS = [
@@ -20,7 +20,6 @@ const MODEL_CONFIGS: Record<string, { baseScale: number }> = {
 
 function FloatingModel({ modelPath, startPos, scale, speed, direction }: { modelPath: string, startPos: [number, number, number], scale: number, speed: number, direction: [number, number, number] }) {
     const { scene } = useGLTF(modelPath);
-    const clonedScene = useMemo(() => scene.clone(), [scene, modelPath]);
     const ref = useRef<THREE.Group>(null);
 
     // Initial random rotation setup
@@ -49,7 +48,11 @@ function FloatingModel({ modelPath, startPos, scale, speed, direction }: { model
         if (ref.current.position.y < -20) ref.current.position.y = 20;
     });
 
-    return <primitive object={clonedScene} ref={ref} scale={scale} />;
+    return (
+        <group ref={ref} scale={scale}>
+            <Clone object={scene} />
+        </group>
+    );
 }
 
 // Pre-load all GLTF files
@@ -134,7 +137,14 @@ export function RandomObjects({ zIndexClass = "z-0" }: { zIndexClass?: string })
             className={`fixed inset-0 pointer-events-none ${zIndexClass} overflow-hidden`}
             aria-hidden
         >
-            <Canvas camera={{ position: [0, 0, 15], fov: 45 }} frameloop="always" dpr={[1, 2]}>
+            {/* Optimized Canvas: lower DPR, performance scaling, and pause when tab is hidden */}
+            <Canvas
+                camera={{ position: [0, 0, 15], fov: 45 }}
+                frameloop={visible ? "always" : "demand"}
+                dpr={[1, 1.2]}
+                performance={{ min: 0.5 }}
+                gl={{ powerPreference: "high-performance" }}
+            >
                 <ambientLight intensity={0} />
                 <directionalLight position={[0, 10, 0]} intensity={1} />
                 <directionalLight position={[-10, -10, -5]} intensity={3} color="#0055FF" />
@@ -150,6 +160,7 @@ export function RandomObjects({ zIndexClass = "z-0" }: { zIndexClass?: string })
                             direction={obj.direction}
                         />
                     ))}
+                    <Preload all />
                 </Suspense>
             </Canvas>
         </div>

@@ -1,6 +1,6 @@
 "use client"
 
-import { useRef, useEffect, useState } from "react"
+import { useRef, useEffect, useState, useMemo } from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { cn } from "@/lib/utils"
@@ -80,7 +80,8 @@ export function SiteNav() {
   const searchInputRef = useRef<HTMLInputElement>(null)
   const router = useRouter()
 
-  const searchResults = getSearchResults(searchQuery)
+  const searchResults = useMemo(() => getSearchResults(searchQuery), [searchQuery])
+  const mobileSearchResults = useMemo(() => getSearchResults(mobileSearchQuery), [mobileSearchQuery])
 
   const closeSearch = () => {
     setIsSearchOpen(false)
@@ -228,7 +229,7 @@ export function SiteNav() {
             <span className="shrink-0 text-white/20 text-sm leading-none select-none mx-0.5" aria-hidden>|</span>
 
             {navItems.map(({ href, label }, i) => {
-              const isActive = href === "/" ? pathname === "/" : pathname.startsWith(href)
+              const isActive = activeIndex === i
               return (
                 <span key={href} className="contents">
                   <Link
@@ -449,7 +450,7 @@ export function SiteNav() {
             {/* Nav items */}
             <nav style={{ padding: "8px 10px" }}>
               {navItems.map(({ href, label, icon: Icon }, index) => {
-                const isActive = href === "/" ? pathname === "/" : pathname.startsWith(href)
+                const isActive = activeIndex === index
                 return (
                   <Link
                     key={href}
@@ -586,7 +587,7 @@ export function SiteNav() {
 
             {/* Results */}
             <div className="overflow-y-auto max-h-[55vh] pb-8">
-              {getSearchResults(mobileSearchQuery).map((result) => (
+              {mobileSearchResults.map((result) => (
                 <button
                   key={`${result.url}-${result.label}`}
                   onClick={() => { navigateTo(result.url); setIsMobileSearchOpen(false); setMobileSearchQuery("") }}
@@ -604,7 +605,7 @@ export function SiteNav() {
                   <ArrowUpRight size={13} className="text-white/20 shrink-0" />
                 </button>
               ))}
-              {mobileSearchQuery.trim() !== "" && getSearchResults(mobileSearchQuery).length === 0 && (
+              {mobileSearchQuery.trim() !== "" && mobileSearchResults.length === 0 && (
                 <p className="text-white/30 text-sm text-center py-8">No results for &ldquo;{mobileSearchQuery}&rdquo;</p>
               )}
               {mobileSearchQuery.trim() === "" && (
