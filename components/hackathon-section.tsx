@@ -186,8 +186,8 @@ export default function HackathonSection() {
                 Solaris X
               </span>
             </div>
-            <span className="tag-mono" style={{ fontSize: '10px', color: 'rgba(255,255,255,0.52)', letterSpacing: '0.2em', textTransform: 'uppercase' }}>
-              LUMINUS'26
+              <span className="tag-mono" style={{ fontSize: '10px', color: 'rgba(255,255,255,0.52)', letterSpacing: '0.2em', textTransform: 'uppercase' }}>
+              LUMINUS&apos;26
             </span>
           </div>
 
@@ -216,7 +216,7 @@ export default function HackathonSection() {
 
           {/* Tagline */}
           <div className="anim-3" style={{ marginBottom: '1.5rem', display: 'flex', alignItems: 'baseline', gap: '4px' }}>
-            <span className="tag-mono" style={{ fontSize: '0.875rem', color: '#c084fc', fontStyle: 'italic', textShadow: '0 0 12px rgba(168,85,247,0.35)' }}>Build Beyond Code. Engineer What's Next</span>
+            <span className="tag-mono" style={{ fontSize: '0.875rem', color: '#c084fc', fontStyle: 'italic', textShadow: '0 0 12px rgba(168,85,247,0.35)' }}>Build Beyond Code. Engineer What&apos;s Next</span>
             <span className="cursor-blink tag-mono" style={{ color: 'rgba(255,255,255,0.4)' }}>_</span>
           </div>
 

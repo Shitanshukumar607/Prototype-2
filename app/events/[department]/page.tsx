@@ -112,6 +112,7 @@ export default async function DepartmentEventsPage({ params }: PageProps) {
                       eventName={ev.name}
                       teamSize={ev.teamSize}
                       registrationFee={ev.registrationFee}
+                      registrationOpen={ev.registrationOpen}
                     />
                   </div>
                   {ev.rules && <EventCardRules rules={ev.rules} />}

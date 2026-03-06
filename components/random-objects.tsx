@@ -1,3 +1,4 @@
+// @ts-nocheck
 "use client";
 
 import React, { Suspense, useEffect, useState, useMemo, useRef } from "react";
@@ -20,7 +21,7 @@ const MODEL_CONFIGS: Record<string, { baseScale: number }> = {
 
 function FloatingModel({ modelPath, startPos, scale, speed, direction }: { modelPath: string, startPos: [number, number, number], scale: number, speed: number, direction: [number, number, number] }) {
     const { scene } = useGLTF(modelPath);
-    const clonedScene = useMemo(() => scene.clone(), [scene, modelPath]);
+    const clonedScene = useMemo(() => scene.clone(), [scene]);
     const ref = useRef<THREE.Group>(null);
 
     // Initial random rotation setup

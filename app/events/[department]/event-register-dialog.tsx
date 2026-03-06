@@ -21,6 +21,7 @@ interface EventRegisterDialogProps {
   eventName: string
   teamSize: string
   registrationFee?: number
+  registrationOpen?: boolean
 }
 
 function parseTeamSize(teamSize: string): { min: number; max: number } {
@@ -65,6 +66,7 @@ export function EventRegisterDialog({
   eventName,
   teamSize,
   registrationFee,
+  registrationOpen = true,
 }: EventRegisterDialogProps) {
   const [open, setOpen] = useState(false)
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
@@ -81,6 +83,14 @@ export function EventRegisterDialog({
       setCollegeValues({})
     }
   }, [min, open])
+
+  if (!registrationOpen) {
+    return (
+      <div className="mt-1 inline-flex items-center rounded-full border border-white/20 bg-white/5 px-3 py-1 text-[11px] font-medium tracking-[0.18em] uppercase text-white/60">
+        Registrations closed
+      </div>
+    )
+  }
 
   return (
     <Dialog

@@ -1,3 +1,24 @@
+import type { Metadata } from "next"
+
+export const metadata: Metadata = {
+  title: "Schedule · Luminus Techfest",
+  description:
+    "View the upcoming schedule for Luminus Techfest at RNSIT — event days, hackathon windows, and department tracks.",
+  openGraph: {
+    title: "Schedule · Luminus Techfest",
+    description:
+      "Stay updated on the Luminus Techfest timeline, including Solaris X Grand Hackathon and department events.",
+    images: [
+      {
+        url: "/og-luminus-2026.png",
+        width: 1230,
+        height: 630,
+        alt: "Luminus Techfest 2026 hero graphic",
+      },
+    ],
+  },
+}
+
 export default function SchedulePage() {
   return (
     <main className="pt-24 px-6 mb-24">
