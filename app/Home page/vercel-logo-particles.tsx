@@ -33,8 +33,28 @@ export default function LuminusParticles({ startDispersed = false, hideCursor = 
       document.body.classList.add("hide-desktop-scrollbar")
     }
 
+    type Particle = {
+      x: number; y: number
+      tx: number; ty: number
+      vx: number; vy: number
+      size: number; phase: number
+      bgx: number; bgy: number
+      r: number; g: number; b: number
+    }
+
+    type Shockwave = {
+      x: number; y: number
+      radius: number
+      maxRadius: number
+      strength: number
+      age: number
+    }
+
     /** Extra particles that fade in on scroll to fill the background when dispersed */
     type FillParticle = { x: number; y: number; size: number; phase: number; r: number; g: number; b: number }
+
+    let particles: Particle[] = []
+    const shockwaves: Shockwave[] = []
     let fillParticles: FillParticle[] = []
 
     function createFillParticles() {
@@ -59,46 +79,68 @@ export default function LuminusParticles({ startDispersed = false, hideCursor = 
       }
     }
 
-    const resize = () => {
-      const w = window.innerWidth
-      const h = window.innerHeight
+    // Mobile browsers can trigger "resize" during scroll (URL bar show/hide),
+    // which causes visible jumps if we recompute sizes/progress. Keep a stable viewport
+    // height unless we detect a meaningful resize (orientation / real layout change).
+    let stableViewportW = typeof window !== "undefined" ? window.innerWidth : 0
+    let stableViewportH = typeof window !== "undefined" ? window.innerHeight : 0
+
+    const applyResize = (wCssPx: number, hCssPx: number) => {
+      const prevW = canvas.width
+      const prevH = canvas.height
       // Keep DPR low on mobile to avoid over-rendering the canvas.
       const dprCap = isMobileViewport() ? 1 : 2
       const dpr = Math.min(typeof window !== "undefined" ? window.devicePixelRatio || 1 : 1, dprCap)
-      canvas.width = w * dpr
-      canvas.height = h * dpr
-      if (fillParticles.length > 0) createFillParticles()
+      const nextW = Math.max(1, Math.round(wCssPx * dpr))
+      const nextH = Math.max(1, Math.round(hCssPx * dpr))
+      canvas.width = nextW
+      canvas.height = nextH
+
+      if (prevW > 0 && prevH > 0 && (prevW !== nextW || prevH !== nextH)) {
+        const sx = nextW / prevW
+        const sy = nextH / prevH
+
+        // Keep both logo-particles and fill-stars in place (no random re-seed).
+        for (const p of particles) {
+          p.x *= sx; p.y *= sy
+          p.tx *= sx; p.ty *= sy
+          p.bgx *= sx; p.bgy *= sy
+        }
+        for (const fp of fillParticles) {
+          fp.x *= sx; fp.y *= sy
+        }
+      }
+
+      if (fillParticles.length === 0) createFillParticles()
       return dpr
     }
+
+    const resize = () => applyResize(stableViewportW, stableViewportH)
+
     let dpr = resize()
-    const handleResize = () => { dpr = resize() }
+
+    const handleResize = () => {
+      const nextW = window.innerWidth
+      const nextH = window.innerHeight
+
+      const wChanged = Math.abs(nextW - stableViewportW) >= 2
+      const hDelta = Math.abs(nextH - stableViewportH)
+      const minorMobileHeightShift = isMobileViewport() && !wChanged && hDelta > 0 && hDelta < 160
+
+      // Ignore small height-only changes on mobile (URL bar show/hide while scrolling).
+      if (minorMobileHeightShift) return
+
+      stableViewportW = nextW
+      stableViewportH = nextH
+      dpr = resize()
+    }
     window.addEventListener("resize", handleResize)
     if (useCustomCursor) {
       document.documentElement.style.cursor = "none"
       document.body.style.cursor = "none"
     }
 
-
-    type Particle = {
-      x: number; y: number
-      tx: number; ty: number
-      vx: number; vy: number
-      size: number; phase: number
-      bgx: number; bgy: number
-      r: number; g: number; b: number
-    }
-
-    type Shockwave = {
-      x: number; y: number
-      radius: number
-      maxRadius: number
-      strength: number
-      age: number
-    }
-
-
     const mouse = { x: -9999, y: -9999 }
-    const shockwaves: Shockwave[] = []
     let clickGlow = 0
     let starRotation = 0
 
@@ -124,7 +166,6 @@ export default function LuminusParticles({ startDispersed = false, hideCursor = 
       window.addEventListener("click", handleClick)
     }
 
-    let particles: Particle[] = []
     let imageData: ImageData | null = null
     let scrollProgress = 0
     let scrollVelocity = 0
@@ -134,7 +175,7 @@ export default function LuminusParticles({ startDispersed = false, hideCursor = 
     const handleScroll = () => {
       if (startDispersed) return
       const doc = document.documentElement
-      const max = doc.scrollHeight - window.innerHeight
+      const max = doc.scrollHeight - stableViewportH
       scrollVelocity = Math.abs(window.scrollY - lastScrollY)
       // Cap scroll velocity on mobile so large flicks don't create jerky motion.
       if (isMobileViewport()) {
@@ -420,8 +461,6 @@ export default function LuminusParticles({ startDispersed = false, hideCursor = 
         p.x += p.vx
         p.y += p.vy
 
-        scrollVelocity *= isMobile ? 0.9 : 0.92
-
         const twinkle = 0.6 + 0.4 * Math.sin(time * 0.003 + p.phase)
         const readabilityDim = 1 - 0.45 * scrollProgress
 
@@ -435,6 +474,9 @@ export default function LuminusParticles({ startDispersed = false, hideCursor = 
         ctx.fillStyle = `rgba(${Math.round(p.r)},${Math.round(p.g)},${Math.round(p.b)},${twinkle * readabilityDim})`
         ctx.fillRect(p.x, p.y, p.size, p.size)
       }
+
+      // Decay scroll velocity once per frame, not per particle.
+      scrollVelocity *= isMobile ? 0.9 : 0.92
 
       // Draw text below the logo, fades as user scrolls
       const textAlpha = Math.max(0, 1 - scrollProgress * 3)
@@ -528,7 +570,7 @@ export default function LuminusParticles({ startDispersed = false, hideCursor = 
       }
       if (!startDispersed) window.removeEventListener("scroll", handleScroll)
     }
-  }, [options])
+  }, [options, hideCursor, particleGap, startDispersed])
 
   return (
     <canvas

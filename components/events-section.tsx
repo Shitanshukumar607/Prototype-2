@@ -66,11 +66,11 @@ function contrastColor(hex: string): string {
   return luminance > 0.55 ? "rgba(0,0,0,0.9)" : "rgba(255,255,255,0.95)"
 }
 
-const CATEGORIES = departments.map((dept, i) => ({
+const BASE_CATEGORIES = departments.map((dept, i) => ({
   id: dept.id,
   title: dept.fullName ?? dept.name,
   short: dept.id === "grand-hackathon" ? "HACKATHON" : dept.name,
-  index: String(i + 1).padStart(2, "0"),
+  originalIndex: i,
   icon: DEPARTMENT_ICONS[dept.id] ?? Sparkles,
   color: COLORS[i % COLORS.length],
   events: dept.events.map((ev) => ({
@@ -79,6 +79,19 @@ const CATEGORIES = departments.map((dept, i) => ({
   })),
 }))
 
+// Reorder so that the Grand Hackathon hexagon appears first in the grid
+const CATEGORIES = BASE_CATEGORIES
+  .slice()
+  .sort((a, b) => {
+    const rank = (id: string) => (id === "grand-hackathon" ? 0 : 1)
+    return rank(a.id) - rank(b.id)
+  })
+  .map((cat, displayIndex) => ({
+    ...cat,
+    index: String(displayIndex + 1).padStart(2, "0"),
+  }))
+
+// Total number of events in all departments (keeps the summary accurate even if events change).
 const totalEvents = departments.reduce((acc, dept) => acc + dept.events.length, 0)
 const flagshipCount = departments.reduce(
   (acc, dept) => acc + dept.events.filter((ev) => ev.type === "Flagship" || ev.tag === "Grand Hackathon").length,

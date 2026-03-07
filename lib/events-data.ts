@@ -10,6 +10,8 @@ export interface EventItem {
   type: EventType
   /** Optional badge label (e.g. "Grand Hackathon"); when set, shown instead of type. */
   tag?: string
+  /** When false, registrations are closed for this event. Defaults to open if omitted. */
+  registrationOpen?: boolean
   teamSize: string // e.g. "1", "2", "1 & 2"
   duration: string
   maxParticipants: number

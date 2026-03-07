@@ -1,3 +1,24 @@
+import type { Metadata } from "next"
+
+export const metadata: Metadata = {
+  title: "About · Luminus Techfest",
+  description:
+    "Learn about Luminus, RNSIT’s national-level techfest — its vision, flagship hackathon Solaris X, and cross-disciplinary events that bring engineers and innovators together.",
+  openGraph: {
+    title: "About · Luminus Techfest",
+    description:
+      "Luminus Techfest at RNSIT celebrates engineering, innovation, and collaboration through hackathons, workshops, and department events.",
+    images: [
+      {
+        url: "/og-luminus-2026.png",
+        width: 1230,
+        height: 630,
+        alt: "Luminus Techfest 2026 hero graphic",
+      },
+    ],
+  },
+}
+
 export default function AboutPage() {
   return (
     <main className="pt-24 px-6 mb-24">

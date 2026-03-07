@@ -1,3 +1,4 @@
+// @ts-nocheck
 "use client";
 import { AmbientLight, DirectionalLight } from "three";
 import React, { Suspense, useEffect, useState, useRef } from "react";

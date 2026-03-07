@@ -61,7 +61,7 @@ export default function ContactPage() {
               Contact
             </h1>
             <p className="mt-1.5 text-sm text-white/50">
-              Get in touch with the Luminus Techfest team.
+              Reach the Luminus Techfest organising team at RNSIT.
             </p>
           </header>
 
