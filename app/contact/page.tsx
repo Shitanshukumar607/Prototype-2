@@ -1,13 +1,18 @@
 "use client"
 
+import dynamic from "next/dynamic"
 import Link from "next/link"
-import LuminusParticles from "../Home page/vercel-logo-particles"
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion"
+
+const LuminusParticles = dynamic(
+  () => import("../Home page/vercel-logo-particles").then((m) => m.default),
+  { ssr: false }
+)
 
 const FAQ_ITEMS = [
   {

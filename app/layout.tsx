@@ -98,9 +98,9 @@ export default function RootLayout({
             />
           </div>
 
-          {/* Right Logo */}
+          {/* Right Logo — slightly larger on mobile so 25 logo is easier to see */}
           <div
-            className="fixed top-4 right-4 z-50 flex h-10 sm:h-20 items-center justify-center pointer-events-none"
+            className="fixed top-4 right-4 z-50 flex h-14 sm:h-20 items-center justify-center pointer-events-none"
             aria-hidden
           >
             <Image
@@ -109,7 +109,7 @@ export default function RootLayout({
               width={80}
               height={80}
               priority
-              className="h-10 w-auto max-h-10 object-contain sm:h-20 sm:max-h-20"
+              className="h-14 w-auto max-h-14 object-contain sm:h-20 sm:max-h-20"
             />
           </div>
 

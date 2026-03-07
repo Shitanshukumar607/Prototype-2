@@ -1,6 +1,6 @@
 "use client"
 
-import { useRef, useEffect, useState } from "react"
+import { useRef, useEffect, useState, useMemo } from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { cn } from "@/lib/utils"
@@ -32,17 +32,41 @@ const searchEntries: SearchEntry[] = departments.flatMap((dept) => [
   })),
 ])
 
+function normalizeSearch(text: string): string {
+  return text.toLowerCase().replace(/[^a-z0-9]+/g, "")
+}
+
 function getSearchResults(query: string): SearchEntry[] {
   const q = query.toLowerCase().trim()
   if (!q) return []
   return searchEntries
     .map((entry) => {
       const labelLow = entry.label.toLowerCase()
+      const labelNorm = normalizeSearch(entry.label)
+      const textLow = entry.searchText
+      const textNorm = normalizeSearch(entry.searchText)
+      const qNorm = normalizeSearch(q)
+      const tokens = q.split(/\s+/).filter(Boolean)
+
       let score = 0
-      if (labelLow === q) score = 100
-      else if (labelLow.startsWith(q)) score = 80
-      else if (labelLow.includes(q)) score = 60
-      else if (entry.searchText.includes(q)) score = 30
+
+      // Strong matches on the normalized label (handles spacing like "Robowars" vs "robo wars").
+      if (labelNorm === qNorm) score += 120
+      else if (labelNorm.startsWith(qNorm)) score += 100
+      else if (labelNorm.includes(qNorm)) score += 80
+      else if (textNorm.includes(qNorm)) score += 50
+
+      // Token-level partial matches ("robo" + "wars" should both push Robowars up).
+      for (const token of tokens) {
+        const t = token.toLowerCase()
+        if (!t) continue
+        if (labelLow.includes(t)) score += 18
+        else if (textLow.includes(t)) score += 10
+      }
+
+      // Slight boost for flagship events so marquee events rank higher when tied.
+      if (entry.isFlagship) score += 5
+
       return { entry, score }
     })
     .filter(({ score }) => score > 0)
@@ -80,7 +104,8 @@ export function SiteNav() {
   const searchInputRef = useRef<HTMLInputElement>(null)
   const router = useRouter()
 
-  const searchResults = getSearchResults(searchQuery)
+  const searchResults = useMemo(() => getSearchResults(searchQuery), [searchQuery])
+  const mobileSearchResults = useMemo(() => getSearchResults(mobileSearchQuery), [mobileSearchQuery])
 
   const closeSearch = () => {
     setIsSearchOpen(false)
@@ -228,7 +253,7 @@ export function SiteNav() {
             <span className="shrink-0 text-white/20 text-sm leading-none select-none mx-0.5" aria-hidden>|</span>
 
             {navItems.map(({ href, label }, i) => {
-              const isActive = href === "/" ? pathname === "/" : pathname.startsWith(href)
+              const isActive = activeIndex === i
               return (
                 <span key={href} className="contents">
                   <Link
@@ -449,7 +474,7 @@ export function SiteNav() {
             {/* Nav items */}
             <nav style={{ padding: "8px 10px" }}>
               {navItems.map(({ href, label, icon: Icon }, index) => {
-                const isActive = href === "/" ? pathname === "/" : pathname.startsWith(href)
+                const isActive = activeIndex === index
                 return (
                   <Link
                     key={href}
@@ -586,7 +611,7 @@ export function SiteNav() {
 
             {/* Results */}
             <div className="overflow-y-auto max-h-[55vh] pb-8">
-              {getSearchResults(mobileSearchQuery).map((result) => (
+              {mobileSearchResults.map((result) => (
                 <button
                   key={`${result.url}-${result.label}`}
                   onClick={() => { navigateTo(result.url); setIsMobileSearchOpen(false); setMobileSearchQuery("") }}
@@ -604,7 +629,7 @@ export function SiteNav() {
                   <ArrowUpRight size={13} className="text-white/20 shrink-0" />
                 </button>
               ))}
-              {mobileSearchQuery.trim() !== "" && getSearchResults(mobileSearchQuery).length === 0 && (
+              {mobileSearchQuery.trim() !== "" && mobileSearchResults.length === 0 && (
                 <p className="text-white/30 text-sm text-center py-8">No results for &ldquo;{mobileSearchQuery}&rdquo;</p>
               )}
               {mobileSearchQuery.trim() === "" && (

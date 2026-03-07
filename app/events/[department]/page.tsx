@@ -1,13 +1,22 @@
 import Link from "next/link"
+import dynamic from "next/dynamic"
 import { notFound } from "next/navigation"
 import { getDepartmentById, getDepartmentIds } from "@/lib/events-data"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import LuminusParticles from "../../Home page/vercel-logo-particles"
 import { EventCardRules } from "./event-card-rules"
-import { EventRegisterDialog } from "./event-register-dialog"
 import { ContactList } from "./contact-list"
 import { EventHighlighter } from "./event-highlighter"
+
+const LuminusParticles = dynamic(
+  () => import("../../Home page/vercel-logo-particles").then((m) => m.default),
+  { ssr: false }
+)
+
+const EventRegisterDialog = dynamic(
+  () => import("./event-register-dialog").then((m) => ({ default: m.EventRegisterDialog })),
+  { ssr: false }
+)
 
 interface PageProps {
   params: Promise<{ department: string }>

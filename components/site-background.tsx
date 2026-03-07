@@ -1,12 +1,20 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import dynamic from "next/dynamic";
 import { usePathname } from "next/navigation";
-import { RandomObjects } from "@/components/random-objects";
+
+// Three.js + @react-three/fiber + GLTF are the heaviest client chunks; load only on desktop and after first paint.
+const RandomObjects = dynamic(
+    () => import("@/components/random-objects").then((m) => m.RandomObjects),
+    { ssr: false }
+);
 
 export function SiteBackground() {
     const pathname = usePathname();
     const [fadeOpacity, setFadeOpacity] = useState(0);
+    const [isDesktop, setIsDesktop] = useState<boolean | null>(null);
+    const [defer3D, setDefer3D] = useState(true);
     const isEventsPage = pathname?.startsWith("/events") ?? false;
     const isContactPage = pathname === "/contact";
     const hidePurpleGradient = isEventsPage || isContactPage;
@@ -38,6 +46,25 @@ export function SiteBackground() {
         return () => window.removeEventListener("scroll", handleScroll);
     }, []);
 
+    useEffect(() => {
+        const updateViewport = () => {
+            if (typeof window === "undefined") return;
+            setIsDesktop(window.innerWidth >= 768);
+        };
+        updateViewport();
+        window.addEventListener("resize", updateViewport);
+        return () => window.removeEventListener("resize", updateViewport);
+    }, []);
+
+    // Defer loading the heavy Three.js chunk until after first paint so main bundle stays fast.
+    useEffect(() => {
+        if (!defer3D) return;
+        const t = requestAnimationFrame(() => {
+            requestAnimationFrame(() => setDefer3D(false));
+        });
+        return () => cancelAnimationFrame(t);
+    }, [defer3D]);
+
     return (
         <>
             {/* Base Global Background Color */}
@@ -54,8 +81,8 @@ export function SiteBackground() {
                 />
             )}
 
-            {/* Floating 3D Objects */}
-            <RandomObjects zIndexClass={objectsZ} />
+            {/* Floating 3D Objects — desktop only, after first paint to keep initial load light */}
+            {isDesktop && !defer3D && <RandomObjects zIndexClass={objectsZ} />}
 
             {/* Scroll-triggered Black Overlay — fades in on scroll so purplish theme vanishes; particle canvas (z-10) stays on top */}
             <div

@@ -1,5 +1,9 @@
 import dynamic from "next/dynamic"
-import VercelLogoParticles from "./Home page/vercel-logo-particles"
+
+const VercelLogoParticles = dynamic(
+  () => import("./Home page/vercel-logo-particles").then((m) => m.default),
+  { ssr: false }
+)
 
 const HackathonSectionWrapper = dynamic(
   () => import("@/components/hackathon-section-wrapper"),
