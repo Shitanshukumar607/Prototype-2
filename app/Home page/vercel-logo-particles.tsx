@@ -33,51 +33,6 @@ export default function LuminusParticles({ startDispersed = false, hideCursor = 
       document.body.classList.add("hide-desktop-scrollbar")
     }
 
-    /** Extra particles that fade in on scroll to fill the background when dispersed */
-    type FillParticle = { x: number; y: number; size: number; phase: number; r: number; g: number; b: number }
-    let fillParticles: FillParticle[] = []
-
-    function createFillParticles() {
-      const w = canvas.width
-      const h = canvas.height
-      const mobile = isMobileViewport()
-      // Fewer fill particles when dispersed for performance; logo density is handled by main particles.
-      const count = mobile
-        ? Math.min(220, Math.floor((w * h) / (90 * 90)))
-        : Math.min(800, Math.floor((w * h) / (60 * 60)))
-      fillParticles = []
-      for (let i = 0; i < count; i++) {
-        fillParticles.push({
-          x: Math.random() * w,
-          y: Math.random() * h,
-          size: Math.random() * 1.4 + 0.4,
-          phase: Math.random() * Math.PI * 2,
-          r: 200 + Math.floor(Math.random() * 55),
-          g: 180 + Math.floor(Math.random() * 75),
-          b: 255,
-        })
-      }
-    }
-
-    const resize = () => {
-      const w = window.innerWidth
-      const h = window.innerHeight
-      // Keep DPR low on mobile to avoid over-rendering the canvas.
-      const dprCap = isMobileViewport() ? 1 : 2
-      const dpr = Math.min(typeof window !== "undefined" ? window.devicePixelRatio || 1 : 1, dprCap)
-      canvas.width = w * dpr
-      canvas.height = h * dpr
-      if (fillParticles.length > 0) createFillParticles()
-      return dpr
-    }
-    let dpr = resize()
-    const handleResize = () => { dpr = resize() }
-    window.addEventListener("resize", handleResize)
-    if (useCustomCursor) {
-      document.documentElement.style.cursor = "none"
-      document.body.style.cursor = "none"
-    }
-
     type Particle = {
       x: number; y: number
       tx: number; ty: number
@@ -105,9 +60,11 @@ export default function LuminusParticles({ startDispersed = false, hideCursor = 
     function createFillParticles() {
       const w = canvas.width
       const h = canvas.height
-      const count = isMobileViewport()
-        ? Math.min(1100, Math.floor((w * h) / (46 * 46)))
-        : Math.min(2200, Math.floor((w * h) / (36 * 36)))
+      const mobile = isMobileViewport()
+      // Fewer fill particles when dispersed for performance; logo density is handled by main particles.
+      const count = mobile
+        ? Math.min(220, Math.floor((w * h) / (90 * 90)))
+        : Math.min(800, Math.floor((w * h) / (60 * 60)))
       fillParticles = []
       for (let i = 0; i < count; i++) {
         fillParticles.push({
@@ -131,7 +88,8 @@ export default function LuminusParticles({ startDispersed = false, hideCursor = 
     const applyResize = (wCssPx: number, hCssPx: number) => {
       const prevW = canvas.width
       const prevH = canvas.height
-      const dprCap = isMobileViewport() ? 1.6 : 2
+      // Keep DPR low on mobile to avoid over-rendering the canvas.
+      const dprCap = isMobileViewport() ? 1 : 2
       const dpr = Math.min(typeof window !== "undefined" ? window.devicePixelRatio || 1 : 1, dprCap)
       const nextW = Math.max(1, Math.round(wCssPx * dpr))
       const nextH = Math.max(1, Math.round(hCssPx * dpr))
