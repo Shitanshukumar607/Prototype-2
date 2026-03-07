@@ -78,7 +78,6 @@ export default function LuminusParticles({ startDispersed = false, hideCursor = 
       document.body.style.cursor = "none"
     }
 
-
     type Particle = {
       x: number; y: number
       tx: number; ty: number
@@ -96,9 +95,94 @@ export default function LuminusParticles({ startDispersed = false, hideCursor = 
       age: number
     }
 
+    /** Extra particles that fade in on scroll to fill the background when dispersed */
+    type FillParticle = { x: number; y: number; size: number; phase: number; r: number; g: number; b: number }
+
+    let particles: Particle[] = []
+    const shockwaves: Shockwave[] = []
+    let fillParticles: FillParticle[] = []
+
+    function createFillParticles() {
+      const w = canvas.width
+      const h = canvas.height
+      const count = isMobileViewport()
+        ? Math.min(1100, Math.floor((w * h) / (46 * 46)))
+        : Math.min(2200, Math.floor((w * h) / (36 * 36)))
+      fillParticles = []
+      for (let i = 0; i < count; i++) {
+        fillParticles.push({
+          x: Math.random() * w,
+          y: Math.random() * h,
+          size: Math.random() * 1.4 + 0.4,
+          phase: Math.random() * Math.PI * 2,
+          r: 200 + Math.floor(Math.random() * 55),
+          g: 180 + Math.floor(Math.random() * 75),
+          b: 255,
+        })
+      }
+    }
+
+    // Mobile browsers can trigger "resize" during scroll (URL bar show/hide),
+    // which causes visible jumps if we recompute sizes/progress. Keep a stable viewport
+    // height unless we detect a meaningful resize (orientation / real layout change).
+    let stableViewportW = typeof window !== "undefined" ? window.innerWidth : 0
+    let stableViewportH = typeof window !== "undefined" ? window.innerHeight : 0
+
+    const applyResize = (wCssPx: number, hCssPx: number) => {
+      const prevW = canvas.width
+      const prevH = canvas.height
+      const dprCap = isMobileViewport() ? 1.6 : 2
+      const dpr = Math.min(typeof window !== "undefined" ? window.devicePixelRatio || 1 : 1, dprCap)
+      const nextW = Math.max(1, Math.round(wCssPx * dpr))
+      const nextH = Math.max(1, Math.round(hCssPx * dpr))
+      canvas.width = nextW
+      canvas.height = nextH
+
+      if (prevW > 0 && prevH > 0 && (prevW !== nextW || prevH !== nextH)) {
+        const sx = nextW / prevW
+        const sy = nextH / prevH
+
+        // Keep both logo-particles and fill-stars in place (no random re-seed).
+        for (const p of particles) {
+          p.x *= sx; p.y *= sy
+          p.tx *= sx; p.ty *= sy
+          p.bgx *= sx; p.bgy *= sy
+        }
+        for (const fp of fillParticles) {
+          fp.x *= sx; fp.y *= sy
+        }
+      }
+
+      if (fillParticles.length === 0) createFillParticles()
+      return dpr
+    }
+
+    const resize = () => applyResize(stableViewportW, stableViewportH)
+
+    let dpr = resize()
+
+    const handleResize = () => {
+      const nextW = window.innerWidth
+      const nextH = window.innerHeight
+
+      const wChanged = Math.abs(nextW - stableViewportW) >= 2
+      const hDelta = Math.abs(nextH - stableViewportH)
+      const minorMobileHeightShift = isMobileViewport() && !wChanged && hDelta > 0 && hDelta < 160
+
+      // Ignore small height-only changes on mobile (URL bar show/hide while scrolling).
+      if (minorMobileHeightShift) return
+
+      stableViewportW = nextW
+      stableViewportH = nextH
+      dpr = resize()
+    }
+    window.addEventListener("resize", handleResize)
+    if (useCustomCursor) {
+      document.documentElement.style.cursor = "none"
+      document.body.style.cursor = "none"
+    }
 
     const mouse = { x: -9999, y: -9999 }
-    const shockwaves: Shockwave[] = []
     let clickGlow = 0
     let starRotation = 0
 
@@ -124,7 +208,6 @@ export default function LuminusParticles({ startDispersed = false, hideCursor = 
       window.addEventListener("click", handleClick)
     }
 
-    let particles: Particle[] = []
     let imageData: ImageData | null = null
     let scrollProgress = 0
     let scrollVelocity = 0
@@ -134,7 +217,7 @@ export default function LuminusParticles({ startDispersed = false, hideCursor = 
     const handleScroll = () => {
       if (startDispersed) return
       const doc = document.documentElement
-      const max = doc.scrollHeight - window.innerHeight
+      const max = doc.scrollHeight - stableViewportH
       scrollVelocity = Math.abs(window.scrollY - lastScrollY)
       // Cap scroll velocity on mobile so large flicks don't create jerky motion.
       if (isMobileViewport()) {
@@ -529,7 +612,7 @@ export default function LuminusParticles({ startDispersed = false, hideCursor = 
       }
       if (!startDispersed) window.removeEventListener("scroll", handleScroll)
     }
-  }, [options])
+  }, [options, hideCursor, particleGap, startDispersed])
 
   return (
     <canvas

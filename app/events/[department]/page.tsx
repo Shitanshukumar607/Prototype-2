@@ -31,6 +31,14 @@ export default async function DepartmentEventsPage({ params }: PageProps) {
   const dept = getDepartmentById(slug)
   if (!dept) notFound()
 
+  const eventsForDisplay = dept.events
+    .map((ev, originalIndex) => ({ ev, originalIndex }))
+    .sort((a, b) => {
+      const rank = (e: (typeof a)["ev"]) =>
+        e.tag === "Grand Hackathon" || e.type === "Flagship" ? 0 : 1
+      return rank(a.ev) - rank(b.ev)
+    })
+
   return (
     <main className="relative min-h-screen">
       <EventHighlighter />
@@ -50,18 +58,12 @@ export default async function DepartmentEventsPage({ params }: PageProps) {
           {dept.events.length} event{dept.events.length !== 1 ? "s" : ""} in this department.
         </p>
         <div className="space-y-6">
-          {[...dept.events]
-            .sort((a, b) => {
-              const rank = (e: typeof a) =>
-                e.tag === "Grand Hackathon" || e.type === "Flagship" ? 0 : 1
-              return rank(a) - rank(b)
-            })
-            .map((ev, eventIndex) => {
+          {eventsForDisplay.map(({ ev, originalIndex }, displayIndex) => {
             const primaryContact = ev.contacts?.[0]
             return (
               <Card
                 key={ev.name}
-                id={`event-${eventIndex}`}
+                id={`event-${originalIndex}`}
                 className="rounded-2xl border-white/10 bg-white/5 backdrop-blur-md shadow-lg shadow-black/20 overflow-hidden"
               >
                 <CardHeader className="pb-3 px-6 pt-6">
@@ -115,10 +117,11 @@ export default async function DepartmentEventsPage({ params }: PageProps) {
                     <EventRegisterDialog
                       departmentId={dept.id}
                       departmentName={dept.fullName ?? dept.name}
-                      eventKey={`${dept.id}:${eventIndex + 1}`}
+                      eventKey={`${dept.id}:${originalIndex + 1}`}
                       eventName={ev.name}
                       teamSize={ev.teamSize}
                       registrationFee={ev.registrationFee}
+                      registrationOpen={ev.registrationOpen}
                     />
                   </div>
                   {ev.rules && <EventCardRules rules={ev.rules} />}

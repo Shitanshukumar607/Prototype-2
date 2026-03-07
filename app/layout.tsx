@@ -1,5 +1,4 @@
 import type { Metadata } from "next"
-import Image from "next/image"
 import Script from "next/script"
 import { GeistSans } from "geist/font/sans"
 import { GeistMono } from "geist/font/mono"
@@ -8,14 +7,46 @@ import "./globals.css"
 import { ThemeProvider } from "@/components/theme-provider"
 import { Toaster } from "@/components/ui/toaster"
 import { SiteNav } from "@/components/site-nav"
-
-import rnsitLogoImg from "@/assets/Rnsit_logo.png"
-import logo25Img from "@/assets/25_logo.png"
+import { CornerLogos } from "@/components/corner-logos"
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://luminus.rnsit.ac.in"),
   title: "Luminus Techfest",
   description:
     "Luminus Techfest — Register for events, explore the schedule, and be part of the experience.",
+  verification: {
+    google: "QjwFBT4FZ8oITegXR-xgntk5-NOCK7vsmBeFJIQ-Qus",
+  },
+  keywords: [
+    "Luminus",
+    "Luminous",
+    "Luminus Techfest",
+    "Luminous Techfest",
+    "Luminus tech fest",
+    "Luminous tech fest",
+    "Luminus RNSIT",
+    "Luminous RNSIT",
+    "Luminus RNSIT fest",
+    "Luminous RNSIT fest",
+    "Luminus 2026",
+    "Luminus 2026 techfest",
+    "RNSIT techfest",
+    "RNSIT fest",
+    "RNSIT Luminus",
+    "RNSIT Luminous",
+    "Solaris X",
+    "Solaris X hackathon",
+    "Solaris X Grand Hackathon",
+    "RNSIT hackathon",
+    "Bangalore tech fest",
+    "Bengaluru techfest",
+    "RNS Institute of Technology fest",
+    "RNSIT",
+    "R N S I T",
+    "RNS Institute of Technology",
+    "RNSIT Bangalore",
+    "RNSIT Bengaluru",
+  ],
   icons: {
     icon: [
       { url: "/favicon/favicon.ico" },
@@ -83,38 +114,34 @@ export default function RootLayout({
           {/* Navigation */}
           <SiteNav />
 
-          {/* Left Logo */}
-          <div
-            className="fixed top-4 left-4 z-50 flex h-10 sm:h-20 items-center justify-center pointer-events-none"
-            aria-hidden
-          >
-            <Image
-              src={rnsitLogoImg}
-              alt="RNSIT Bengaluru"
-              width={80}
-              height={80}
-              priority
-              className="h-10 w-auto max-h-10 object-contain sm:h-20 sm:max-h-20"
-            />
-          </div>
+          {/* Corner logos that fade out on scroll */}
+          <CornerLogos />
 
-          {/* Right Logo — slightly larger on mobile so 25 logo is easier to see */}
-          <div
-            className="fixed top-4 right-4 z-50 flex h-14 sm:h-20 items-center justify-center pointer-events-none"
-            aria-hidden
-          >
-            <Image
-              src={logo25Img}
-              alt="Luminus Techfest"
-              width={80}
-              height={80}
-              priority
-              className="h-14 w-auto max-h-14 object-contain sm:h-20 sm:max-h-20"
-            />
+          {/* Page Content + footer at bottom of page */}
+          <div className="min-h-screen flex flex-col">
+            <div className="flex-1">{children}</div>
+            <footer className="relative z-[20] border-t border-white/10 bg-black/60 backdrop-blur-xl">
+              <div className="mx-auto flex max-w-5xl flex-col items-center justify-between gap-2 px-6 py-3 text-[11px] text-white/55 sm:flex-row">
+                <p className="tracking-[0.18em] uppercase">
+                  Luminus Techfest · RNSIT · 2026
+                </p>
+                <div className="flex items-center gap-3 text-[10px] text-white/45">
+                  <a
+                    href="https://www.instagram.com/luminus.rnsit?igsh=YW8zcXg3bmVoZ3Z3"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="underline-offset-2 hover:text-white/80 hover:underline"
+                  >
+                    Instagram @luminus.rnsit
+                  </a>
+                  <span className="hidden sm:inline text-white/30">·</span>
+                  <span className="hidden sm:inline text-white/40">
+                    Crafted for the Luminus 2026 experience.
+                  </span>
+                </div>
+              </div>
+            </footer>
           </div>
-
-          {/* Page Content */}
-          {children}
 
           {/* Toasts */}
           <Toaster />
