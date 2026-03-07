@@ -64,7 +64,7 @@ export default function LuminusParticles({ startDispersed = false, hideCursor = 
       // Fewer fill particles when dispersed for performance; logo density is handled by main particles.
       const count = mobile
         ? Math.min(220, Math.floor((w * h) / (90 * 90)))
-        : Math.min(800, Math.floor((w * h) / (60 * 60)))
+        : Math.min(700, Math.floor((w * h) / (60 * 60)))
       fillParticles = []
       for (let i = 0; i < count; i++) {
         fillParticles.push({
@@ -199,7 +199,7 @@ export default function LuminusParticles({ startDispersed = false, hideCursor = 
             const wf = isTextPixel ? 0.75 : 0
 
             // On desktop, slightly thin out non-text particles so the swoosh feels lighter while text stays dense.
-            if (!isMobile && !isTextPixel && Math.random() < 0.25) {
+            if (!isMobile && !isTextPixel && Math.random() < 0.3) {
               continue
             }
 
@@ -391,21 +391,21 @@ export default function LuminusParticles({ startDispersed = false, hideCursor = 
         }
 
         // Spring back toward either logo position or dispersed background position.
-        // On mobile, keep forces softer so the dispersion feels smoother and a bit slower.
-        const baseSpring = isMobile ? 0.18 : 0.19
-        const dispersionBoost = (1 - disperse) * (isMobile ? 0.14 : 0.14)
-        const scrollBoost = scrollVelocity * (isMobile ? 0.018 : 0.018)
+        // On mobile, keep forces softer; on desktop, slightly dampen forces to avoid jitter.
+        const baseSpring = isMobile ? 0.18 : 0.17
+        const dispersionBoost = (1 - disperse) * (isMobile ? 0.14 : 0.12)
+        const scrollBoost = scrollVelocity * (isMobile ? 0.018 : 0.012)
         const spring = baseSpring + dispersionBoost + scrollBoost
         p.vx += (targetX - p.x) * spring
         p.vy += (targetY - p.y) * spring
 
         // Gentle per-particle drift so motion feels organic, not perfectly straight.
-        const noiseStrength = isMobile ? 0.03 : 0.06
+        const noiseStrength = isMobile ? 0.03 : 0.045
         p.vx += Math.cos(time * 0.0015 + p.phase) * noiseStrength
         p.vy += Math.sin(time * 0.0013 + p.phase) * noiseStrength
 
         // Velocity clamping and friction for smoother easing.
-        const maxSpeed = isMobile ? 20 : 38
+        const maxSpeed = isMobile ? 20 : 30
         const speed = Math.hypot(p.vx, p.vy)
         if (speed > maxSpeed) {
           const scale = maxSpeed / speed
@@ -413,7 +413,7 @@ export default function LuminusParticles({ startDispersed = false, hideCursor = 
           p.vy *= scale
         }
 
-        const friction = isMobile ? 0.88 : 0.86
+        const friction = isMobile ? 0.88 : 0.89
         p.vx *= friction
         p.vy *= friction
 
