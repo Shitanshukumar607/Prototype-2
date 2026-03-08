@@ -61,7 +61,7 @@ export default function EventsPage() {
                       className="rounded-3xl opacity-50"
                     />
                     <div
-                      className="relative overflow-hidden rounded-3xl border border-white/[0.12] bg-black backdrop-blur-2xl transition-all duration-300 group-hover:border-white"
+                      className="relative overflow-hidden rounded-3xl border border-white/[0.12] bg-black backdrop-blur-2xl transition-all duration-300"
                       style={{
                         boxShadow: "0 0 0 1px rgba(255,255,255,0.04), 0 4px 24px rgba(0,0,0,0.35)",
                       }}
