@@ -85,11 +85,22 @@ const config: Config = {
   				to: {
   					height: '0'
   				}
-  			}
+  			},
+        highlight: {
+          "0%": { backgroundColor: "transparent" },
+          "100%": { backgroundColor: "var(--highlight)" }
+        },
+        flash: {
+          "0%": { backgroundColor: "#000000" },
+          "50%": { backgroundColor: "var(--highlight)" },
+          "100%": { backgroundColor: "#000000" }
+        }
   		},
   		animation: {
   			'accordion-down': 'accordion-down 0.2s ease-out',
-  			'accordion-up': 'accordion-up 0.2s ease-out'
+  			'accordion-up': 'accordion-up 0.2s ease-out',
+        highlight: "highlight 0.6s ease forwards",
+        flash: "flash 0.6s ease forwards"
   		}
   	}
   },

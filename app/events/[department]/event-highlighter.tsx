@@ -3,58 +3,45 @@
 import { useEffect } from "react"
 
 const BEAM_CSS = `
-  @property --beam-angle {
-    syntax: '<angle>';
-    initial-value: 0deg;
-    inherits: false;
-  }
-
   .event-card-lit {
+    position: relative;
     box-shadow:
       0 0 0 1px rgba(168, 85, 247, 0.35),
-      0 0 28px rgba(168, 85, 247, 0.18) !important;
+      0 0 26px rgba(168, 85, 247, 0.24) !important;
     transition: box-shadow 0.4s ease;
   }
 
   .event-border-beam {
     position: absolute;
-    inset: 0;
+    inset: -2px;
     border-radius: inherit;
     pointer-events: none;
     z-index: 20;
-
-    background: conic-gradient(
-      from var(--beam-angle),
-      transparent 72%,
-      rgba(139, 92, 246, 0.45)  80%,
-      rgba(192, 132, 252, 0.9)  84%,
-      rgba(255, 255, 255, 0.95) 87%,
-      rgba(232, 121, 249, 0.7)  90%,
-      transparent               95%
-    );
-
-    -webkit-mask:
-      linear-gradient(#fff 0 0) content-box,
-      linear-gradient(#fff 0 0);
-    -webkit-mask-composite: xor;
-    mask:
-      linear-gradient(#fff 0 0) content-box,
-      linear-gradient(#fff 0 0);
-    mask-composite: exclude;
-    padding: 2px;
-
-    animation:
-      beam-spin 1.05s linear 2,
-      beam-fade 2.1s ease-out forwards;
+    border: 1px solid rgba(216, 180, 254, 0.7);
+    box-shadow:
+      0 0 24px rgba(139, 92, 246, 0.6),
+      0 0 40px rgba(196, 181, 253, 0.45);
+    opacity: 0;
+    animation: soft-glow 1.8s ease-out 2 alternate forwards;
   }
 
-  @keyframes beam-spin {
-    to { --beam-angle: 360deg; }
-  }
-
-  @keyframes beam-fade {
-    0%,  68% { opacity: 1; }
-    100%      { opacity: 0; }
+  @keyframes soft-glow {
+    0% {
+      opacity: 0;
+      transform: scale(0.97);
+    }
+    20% {
+      opacity: 1;
+      transform: scale(1);
+    }
+    70% {
+      opacity: 0.7;
+      transform: scale(1.01);
+    }
+    100% {
+      opacity: 0;
+      transform: scale(1.02);
+    }
   }
 `
 

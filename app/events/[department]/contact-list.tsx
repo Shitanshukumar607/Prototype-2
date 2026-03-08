@@ -1,5 +1,6 @@
 "use client"
 
+import { useState } from "react"
 import { Copy } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
@@ -14,17 +15,20 @@ interface ContactListProps {
 }
 
 export function ContactList({ contacts }: ContactListProps) {
+  const [justCopied, setJustCopied] = useState<string | null>(null)
+
   const handleCopy = async (phone: string) => {
     try {
       if (navigator.clipboard && navigator.clipboard.writeText) {
         await navigator.clipboard.writeText(phone)
-      } else {
-        // Fallback: select text via prompt
-        window.prompt("Copy this number:", phone)
+        setJustCopied(phone)
+        setTimeout(() => setJustCopied(null), 1500)
+        return
       }
     } catch {
-      window.prompt("Copy this number:", phone)
+      // fall through to prompt fallback
     }
+    window.prompt("Copy this number:", phone)
   }
 
   return (
@@ -50,6 +54,11 @@ export function ContactList({ contacts }: ContactListProps) {
           >
             <Copy className="h-3 w-3" />
           </Button>
+          {justCopied === c.phone && (
+            <span className="text-[10px] uppercase tracking-[0.18em] text-white/55">
+              Gotcha!
+            </span>
+          )}
         </li>
       ))}
     </ul>

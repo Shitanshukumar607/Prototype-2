@@ -49,16 +49,23 @@ export default function EventsPage() {
                 href={`/events/${grandHackathon.id}`}
                 className="group block w-full focus:outline-none focus-visible:ring-2 focus-visible:ring-white/20 focus-visible:ring-offset-2 focus-visible:ring-offset-black"
               >
-                {/* Padding gives room for the glow to extend behind the card so it reads as a floating shadow */}
+                {/* Padding gives room for the glow behind the card; static shadow + subtle breathing glow */}
                 <div className="relative overflow-visible py-5 px-3 sm:py-6 sm:px-4">
-                  <div className="relative overflow-visible rounded-3xl transition-all duration-300">
+                  <div
+                    className="relative overflow-visible rounded-3xl transition-all duration-300"
+                    style={{
+                      // Slight, soft halo around the card
+                      boxShadow:
+                        "0 0 14px rgba(15,23,42,0.6), 0 0 22px rgba(59,130,246,0.25), 0 0 30px rgba(99,102,241,0.22)",
+                    }}
+                  >
                     <GlowEffect
                       colors={["#3b82f6", "#6366f1", "#9333ea", "#a78bfa", "#60a5fa"]}
-                      mode="rotate"
+                      mode="breathe"
                       blur="soft"
-                      scale={1.03}
-                      duration={14}
-                      className="rounded-3xl opacity-50"
+                      scale={1.04}
+                      duration={7}
+                      className="rounded-3xl opacity-35"
                     />
                     <div
                       className="relative overflow-hidden rounded-3xl border border-white/[0.12] bg-black backdrop-blur-2xl transition-all duration-300"

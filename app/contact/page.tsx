@@ -2,6 +2,8 @@
 
 import dynamic from "next/dynamic"
 import Link from "next/link"
+import { useState } from "react"
+import { Copy } from "lucide-react"
 import {
   Accordion,
   AccordionContent,
@@ -78,13 +80,16 @@ const FAQ_ITEMS = [
 ]
 
 export default function ContactPage() {
+  const [hasCopiedHelpdesk, setHasCopiedHelpdesk] = useState(false)
+
   return (
     <main className="relative min-h-screen">
       <LuminusParticles startDispersed hideCursor={false} particleGap={4} />
       <div className="relative z-[20] pt-24 pb-20">
         <div className="mx-auto max-w-3xl px-5 sm:px-8">
 
-          <header className="mb-10">
+          {/* Header just above the contact card */}
+          <header className="mb-8">
             <h1 className="text-[2rem] font-semibold tracking-tight text-white sm:text-3xl">
               Contact
             </h1>
@@ -96,31 +101,58 @@ export default function ContactPage() {
           {/* Contact details */}
           <section className="mb-12" aria-label="Contact details">
             <div className="rounded-2xl border border-white/[0.08] bg-white/[0.06] backdrop-blur-2xl overflow-hidden">
-              <div className="px-6 py-6 sm:px-8 sm:py-7">
+              <div className="px-5 py-5 sm:px-8 sm:py-7 space-y-5 sm:space-y-6">
                 <h2 className="text-[11px] font-medium uppercase tracking-[0.2em] text-white/40 mb-4">
                   Reach us
                 </h2>
-                <ul className="space-y-5 text-white/90">
+                <ul className="space-y-4 sm:space-y-5 text-white/90">
                   <li>
                     <span className="text-white/45 text-xs uppercase tracking-widest block mb-1">Helpdesk</span>
-                    <a
-                      href="mailto:helpdesk.luminus@gmail.com"
-                      className="text-white hover:text-white/80 underline underline-offset-2 transition-colors"
-                    >
-                      helpdesk.luminus@gmail.com
-                    </a>
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <a
+                        href="mailto:helpdesk.luminus@gmail.com"
+                        className="text-white hover:text-white/80 underline underline-offset-2 transition-colors break-all"
+                      >
+                        helpdesk.luminus@gmail.com
+                      </a>
+                      <button
+                        type="button"
+                        aria-label="Copy helpdesk email"
+                        onClick={() => {
+                          if (navigator.clipboard) {
+                            navigator.clipboard
+                              .writeText("helpdesk.luminus@gmail.com")
+                              .then(() => {
+                                setHasCopiedHelpdesk(true)
+                                setTimeout(() => setHasCopiedHelpdesk(false), 1500)
+                              })
+                              .catch(() => {})
+                          }
+                        }}
+                        className="inline-flex h-6 w-6 items-center justify-center rounded-full border border-white/20 bg-white/5 text-white/60 hover:text-white hover:border-white/40 transition-colors focus-visible:outline-none focus-visible:ring-0"
+                      >
+                        <Copy className="h-3 w-3" />
+                      </button>
+                      {hasCopiedHelpdesk && (
+                        <span className="text-[10px] uppercase tracking-[0.18em] text-white/55">
+                          Copied!
+                        </span>
+                      )}
+                    </div>
                   </li>
                   <li>
                     <span className="text-white/45 text-xs uppercase tracking-widest block mb-1">Venue</span>
-                    <a
-                      href="https://maps.app.goo.gl/L7cb1NMmTcFtfPR2A"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-white/90 hover:text-white underline underline-offset-2 transition-colors leading-relaxed"
-                    >
-                      RNS Institute of Technology, Dr. Vishnuvardhan Road,
-                      R R Nagar Post, Channasandra, Bengaluru – 560 098
-                    </a>
+                    <p className="text-white/90 leading-relaxed max-w-full">
+                      <a
+                        href="https://maps.app.goo.gl/L7cb1NMmTcFtfPR2A"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="hover:text-white underline underline-offset-2 transition-colors break-words"
+                      >
+                        RNS Institute of Technology, Dr. Vishnuvardhan Road,
+                        R R Nagar Post, Channasandra, Bengaluru – 560 098
+                      </a>
+                    </p>
                   </li>
                 </ul>
                 <p className="mt-6 text-sm text-white/45">
@@ -145,7 +177,7 @@ export default function ContactPage() {
                   <AccordionItem
                     key={i}
                     value={`faq-${i}`}
-                    className="border-white/10 px-5 sm:px-6 last:border-b-0"
+                    className="border-none px-5 sm:px-6"
                   >
                     <AccordionTrigger className="text-left text-white/90 hover:text-white py-4 hover:no-underline">
                       {item.q}
@@ -161,7 +193,14 @@ export default function ContactPage() {
 
           {/* Footer note */}
           <p className="mt-10 text-center text-[11px] text-white/30 uppercase tracking-widest">
-            For any other questions, please contact the Events team.
+            For any questions, please contact the{" "}
+            <a
+              href="mailto:helpdesk.luminus@gmail.com"
+              className="text-white/70 hover:text-white underline underline-offset-2 transition-colors"
+            >
+              helpdesk
+            </a>
+            .
           </p>
 
         </div>

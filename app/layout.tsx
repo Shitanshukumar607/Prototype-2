@@ -117,30 +117,9 @@ export default function RootLayout({
           {/* Corner logos that fade out on scroll */}
           <CornerLogos />
 
-          {/* Page Content + footer at bottom of page */}
+          {/* Page Content */}
           <div className="min-h-screen flex flex-col">
             <div className="flex-1">{children}</div>
-            <footer className="relative z-[20] border-t border-white/10 bg-black/60 backdrop-blur-xl">
-              <div className="mx-auto flex max-w-5xl flex-col items-center justify-between gap-2 px-6 py-3 text-[11px] text-white/55 sm:flex-row">
-                <p className="tracking-[0.18em] uppercase">
-                  Luminus Techfest · RNSIT · 2026
-                </p>
-                <div className="flex items-center gap-3 text-[10px] text-white/45">
-                  <a
-                    href="https://www.instagram.com/luminus.rnsit?igsh=YW8zcXg3bmVoZ3Z3"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="underline-offset-2 hover:text-white/80 hover:underline"
-                  >
-                    Instagram @luminus.rnsit
-                  </a>
-                  <span className="hidden sm:inline text-white/30">·</span>
-                  <span className="hidden sm:inline text-white/40">
-                    Crafted for the Luminus 2026 experience.
-                  </span>
-                </div>
-              </div>
-            </footer>
           </div>
 
           {/* Toasts */}
