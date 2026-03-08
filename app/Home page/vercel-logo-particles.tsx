@@ -82,11 +82,32 @@ export default function LuminusParticles({ startDispersed = false, hideCursor = 
     const resize = () => {
       const w = window.innerWidth
       const h = window.innerHeight
+      const prevW = canvas.width
+      const prevH = canvas.height
       // Keep DPR low on mobile to avoid over-rendering the canvas.
       const dprCap = isMobileViewport() ? 1 : 2
       const dpr = Math.min(typeof window !== "undefined" ? window.devicePixelRatio || 1 : 1, dprCap)
-      canvas.width = w * dpr
-      canvas.height = h * dpr
+      const nextW = Math.max(1, Math.round(w * dpr))
+      const nextH = Math.max(1, Math.round(h * dpr))
+      canvas.width = nextW
+      canvas.height = nextH
+
+      // When the canvas size changes, keep particle positions coherent by scaling
+      // all coordinates into the new space instead of re-seeding randomly.
+      if (prevW > 0 && prevH > 0 && (prevW !== nextW || prevH !== nextH)) {
+        const sx = nextW / prevW
+        const sy = nextH / prevH
+
+        for (const p of particles) {
+          p.x *= sx; p.y *= sy
+          p.tx *= sx; p.ty *= sy
+          p.bgx *= sx; p.bgy *= sy
+        }
+        for (const fp of fillParticles) {
+          fp.x *= sx; fp.y *= sy
+        }
+      }
+
       if (fillParticles.length === 0) createFillParticles()
       return dpr
     }
