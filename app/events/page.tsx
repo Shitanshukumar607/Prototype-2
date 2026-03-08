@@ -2,6 +2,7 @@ import type { Metadata } from "next"
 import Link from "next/link"
 import { departments } from "@/lib/events-data"
 import LuminusParticles from "../Home page/vercel-logo-particles"
+import { GlowEffect } from "@/components/ui/glow-effect"
 
 const GRAND_HACKATHON_ID = "grand-hackathon"
 
@@ -48,32 +49,42 @@ export default function EventsPage() {
                 href={`/events/${grandHackathon.id}`}
                 className="group block w-full focus:outline-none focus-visible:ring-2 focus-visible:ring-white/20 focus-visible:ring-offset-2 focus-visible:ring-offset-black"
               >
-                <div className="relative overflow-hidden rounded-3xl border border-amber-400/20 bg-white/[0.04] backdrop-blur-2xl transition-all duration-300 hover:bg-white/[0.07] hover:border-amber-400/35"
-                  style={{ boxShadow: "inset 3px 0 0 rgba(251,191,36,0.55), 0 0 40px rgba(251,191,36,0.04)" }}
-                >
-                  {/* Amber glow wash on the left */}
-                  <div
-                    className="absolute left-0 top-0 h-full w-24 pointer-events-none"
-                    style={{ background: "linear-gradient(90deg, rgba(251,191,36,0.07) 0%, transparent 100%)" }}
-                    aria-hidden
-                  />
-                  <div className="relative pl-8 pr-7 py-7 sm:pl-11 sm:py-9">
-                    <p className="mb-2 text-[10px] font-medium uppercase tracking-[0.28em] text-amber-400/70">
-                      Featured
-                    </p>
-                    <h2 className="text-2xl font-semibold tracking-tight text-white sm:text-3xl">
-                      {grandHackathon.fullName ?? grandHackathon.name}
-                    </h2>
-                    <p className="mt-2 text-base text-amber-200/80">
-                      3 tracks · 24 hr · ₹1,20,000+ prize pool
-                    </p>
-                    <p className="mt-3 text-sm text-white/55 leading-relaxed max-w-xl">
-                      Solaris X is a 24-hour engineering sprint focused on building scalable, real-world systems utilizing modern AI frameworks and cutting-edge development technologies. Under the theme &ldquo;Engineering the Systems of Tomorrow,&rdquo; participants will design, build, and deploy impactful solutions across three powerful tracks.
-                    </p>
-                    <p className="mt-3 text-sm text-white/50 transition-colors group-hover:text-white/70">
-                      View details →
-                    </p>
+                {/* Padding gives room for the glow to extend behind the card so it reads as a floating shadow */}
+                <div className="relative overflow-visible py-5 px-3 sm:py-6 sm:px-4">
+                  <div className="relative overflow-visible rounded-3xl transition-all duration-300">
+                    <GlowEffect
+                      colors={["#3b82f6", "#6366f1", "#9333ea", "#a78bfa", "#60a5fa"]}
+                      mode="rotate"
+                      blur="soft"
+                      scale={1.03}
+                      duration={14}
+                      className="rounded-3xl opacity-50"
+                    />
+                    <div
+                      className="relative overflow-hidden rounded-3xl border border-white/[0.12] bg-black backdrop-blur-2xl transition-all duration-300 group-hover:border-white"
+                      style={{
+                        boxShadow: "0 0 0 1px rgba(255,255,255,0.04), 0 4px 24px rgba(0,0,0,0.35)",
+                      }}
+                    >
+                    <div className="relative pl-8 pr-7 py-7 sm:pl-11 sm:py-9">
+                      <p className="mb-2 text-[10px] font-medium uppercase tracking-[0.28em] text-amber-400/70">
+                        Featured
+                      </p>
+                      <h2 className="text-2xl font-semibold tracking-tight text-white sm:text-3xl">
+                        {grandHackathon.fullName ?? grandHackathon.name}
+                      </h2>
+                      <p className="mt-2 text-base text-amber-200/80">
+                        3 tracks · 24 hr · ₹1,20,000+ prize pool
+                      </p>
+                      <p className="mt-3 text-sm text-white/55 leading-relaxed max-w-xl">
+                        Solaris X is a 24-hour engineering sprint focused on building scalable, real-world systems utilizing modern AI frameworks and cutting-edge development technologies. Under the theme &ldquo;Engineering the Systems of Tomorrow,&rdquo; participants will design, build, and deploy impactful solutions across three powerful tracks.
+                      </p>
+                      <p className="mt-3 text-sm text-white/50 transition-colors group-hover:text-white/70">
+                        View details →
+                      </p>
+                    </div>
                   </div>
+                </div>
                 </div>
               </Link>
             </section>

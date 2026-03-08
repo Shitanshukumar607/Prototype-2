@@ -16,36 +16,64 @@ const LuminusParticles = dynamic(
 
 const FAQ_ITEMS = [
   {
-    q: "Will attendance be given?",
-    a: "Attendance will be given to all participants.",
+    q: "Who can participate in Luminus?",
+    a: "Students from engineering colleges across India, including undergraduate (B.E./B.Tech) and MCA students, are eligible to participate.",
   },
   {
     q: "How do I register for events?",
-    a: "Visit the Events page and click the Register button on the event card you want to join.",
+    a: "Participants can register through the official Luminus website by selecting the desired event and completing the registration process.",
   },
   {
-    q: "Who can participate?",
-    a: "Eligibility varies by event. Most events are open to college students; some are open to all. Check individual event cards on the Events page for details.",
+    q: "Are registration fees refundable?",
+    a: "No. Once the registration is completed and the payment is made, the fee is non-refundable under any circumstances.",
   },
   {
-    q: "Is there a registration fee?",
-    a: "Registration fees, if applicable, are listed on each event card.",
+    q: "Can students participate in multiple events?",
+    a: "Yes, participants can register for multiple events as long as the event timings do not clash.",
   },
   {
-    q: "How can I get in touch with the organisers?",
-    a: "Use the contact details above. For event-specific queries, please mention the event name.",
+    q: "Is there a limit on team size?",
+    a: "Yes, the team size varies depending on the event. The allowed team size will be mentioned in the event description.",
   },
   {
-    q: "At what time will the events start?",
-    a: "Timings will be announced by the respective event coordinators closer to the date.",
+    q: "Will accommodation be provided for outstation participants?",
+    a: "Participants are advised to arrange their own accommodation unless otherwise specified by the organisers.",
   },
   {
-    q: "Will certificates be given?",
-    a: "Yes, e-certificates will be issued to all participants.",
+    q: "What should participants bring for the events?",
+    a: "Participants should bring a valid college ID and any materials required for the event (such as laptops for coding or hackathon events).",
   },
   {
-    q: "Will students be given ID cards?",
-    a: "Grand Hackathon participants will receive ID cards. All other participants will receive a QR code that serves as their entry ticket.",
+    q: "How can I contact the organisers or receive event updates?",
+    a: "Participants can contact the organisers through the contact details provided on the Luminus website. Important information such as event venues, reporting times, and updates will also be communicated through official channels before the fest.",
+  },
+  {
+    q: "Can participants from different colleges form a team or add members on the day of the event?",
+    a: "Participants from different colleges may form a team unless the event rules specify otherwise. However, only the registered participants listed in the official registration sheet will be allowed to participate, and additional members cannot be added on the day of the event.",
+  },
+  {
+    q: "What should I do if my event timings clash with another event I registered for?",
+    a: "Participants are responsible for ensuring their registered events do not have timing conflicts. The organisers may not be able to accommodate schedule changes.",
+  },
+  {
+    q: "Do participants need to bring their own laptops or equipment?",
+    a: "Yes, participants should bring their own laptops or any required equipment unless the event description specifies otherwise.",
+  },
+  {
+    q: "What happens if a participant arrives late to the event?",
+    a: "Late entry may be allowed at the discretion of the event coordinators, provided the event has not progressed significantly.",
+  },
+  {
+    q: "Is prior knowledge required to participate in the events?",
+    a: "Some events may require basic technical knowledge or skills. Participants are advised to review the event description and rules before registering.",
+  },
+  {
+    q: "Will there be food or refreshment arrangements during the fest?",
+    a: "Food and refreshments may be available on campus through designated stalls or the college cafeteria.",
+  },
+  {
+    q: "What should participants do if they face issues during the event?",
+    a: "Participants should immediately contact the event coordinators or approach the help desk for assistance.",
   },
 ]
 
@@ -80,15 +108,6 @@ export default function ContactPage() {
                       className="text-white hover:text-white/80 underline underline-offset-2 transition-colors"
                     >
                       helpdesk.luminus@gmail.com
-                    </a>
-                  </li>
-                  <li>
-                    <span className="text-white/45 text-xs uppercase tracking-widest block mb-1">General enquiries</span>
-                    <a
-                      href="mailto:events@luminus.in"
-                      className="text-white hover:text-white/80 underline underline-offset-2 transition-colors"
-                    >
-                      events@luminus.in
                     </a>
                   </li>
                   <li>

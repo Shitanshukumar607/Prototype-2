@@ -49,15 +49,16 @@ export function CornerLogos() {
     ? "Luminus Techfest"
     : "Luminus Techfest 25 years"
 
-  // Make the 25-years logo a bit smaller on the home page; slightly larger on mobile so 25 is easier to see
+  // Make the 25-years logo a bit smaller on the home page; slightly larger on mobile so 25 is easier to see.
+  // On events/schedule/contact, Luminus logo is bigger on mobile only for visibility in the nav.
   const rightLogoWidth = showLuminusLogoOnRight ? 144 : 80
   const rightLogoHeight = showLuminusLogoOnRight ? 144 : 80
   const rightLogoClassName = showLuminusLogoOnRight
-    ? "h-16 w-auto max-h-16 object-contain sm:h-36 sm:max-h-36"
+    ? "h-20 w-auto max-h-20 object-contain sm:h-36 sm:max-h-36"
     : "h-14 w-auto max-h-14 object-contain sm:h-16 sm:max-h-16"
 
   const rightLogoWrapperClassName = showLuminusLogoOnRight
-    ? "fixed top-3 right-3 z-50 flex h-10 sm:h-20 items-center justify-center"
+    ? "fixed top-3 right-3 z-50 flex h-14 sm:h-20 items-center justify-center"
     : "fixed top-4 right-4 z-50 flex h-14 sm:h-20 items-center justify-center"
 
   return (

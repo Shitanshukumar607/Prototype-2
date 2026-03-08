@@ -55,7 +55,7 @@ export default async function DepartmentEventsPage({ params }: PageProps) {
           {dept.fullName ?? dept.name}
         </h1>
         <p className="text-white/70 mb-10">
-          {dept.events.length} event{dept.events.length !== 1 ? "s" : ""} in this department.
+          {dept.events.length} track{dept.events.length !== 1 ? "s" : ""} in this department.
         </p>
         <div className="space-y-6">
           {eventsForDisplay.map(({ ev, originalIndex }, displayIndex) => {

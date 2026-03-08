@@ -231,7 +231,7 @@ export const departments: DepartmentEvents[] = [
         maxParticipants: 250,
         prize: 30000,
         date: "8th April, 2026",
-        description: "A flagship, hands-on innovation event where participants design, build, and demonstrate working hardware prototypes. Teams work over 6 hours using embedded systems, sensors, and electronic components. Four tracks: VLSI, Communication, Embedded/IoT, Robotics.",
+        description: "Innovatrium is a flagship innovation event where participants design and develop working hardware prototypes to solve real-world problems. The event focuses on showcasing practical implementations using embedded systems, sensors, and electronic components, encouraging creativity, teamwork, and problem-solving skills.",
         rules: "Each team must consist of 3-4 members. No participant can be part of more than one team. Some optimization will be asked for individual teams on spot. Round 1: prelims (online, abstract screening). Round 2: offline, selected teams present on the day.",
         registrationFee: 500,
         contacts: [
@@ -258,13 +258,13 @@ export const departments: DepartmentEvents[] = [
       {
         name: "Bug Buster",
         type: "Minor",
-        teamSize: "1-2",
+        teamSize: "1-3",
         duration: "3 hr",
         maxParticipants: 100,
         prize: 5000,
         date: "9th April, 2026",
         description: "A competitive debugging event where participants identify and fix errors in embedded programs and electronic logic. Tests understanding of programming concepts, microcontroller architecture, and logical reasoning.",
-        rules: "Individual or team of 1-2 members. Maximum 20-25 teams. No internet access or external reference materials. Only IDE/system provided by organizers. Strict adherence to time limits. Submissions after deadline will not be considered.",
+        rules: "Individual or team of 1-3 members. Maximum 20-25 teams. No internet access or external reference materials. Only IDE/system provided by organizers. Strict adherence to time limits. Submissions after deadline will not be considered.",
         registrationFee: 100,
         contacts: [
           { name: "Vishnu Kaushik S", phone: "9663038822" },
@@ -444,7 +444,7 @@ export const departments: DepartmentEvents[] = [
         date: "8th April, 2026",
         description: "A structural design competition where teams conceptualize and construct a model bridge using restricted materials. Evaluation focuses on structural efficiency, innovation, and load-bearing performance.",
         rules: "Open to UG Civil Engineering students up to 3rd year. Only specified materials are allowed. Use of unauthorized materials will result in disqualification. Judges' decisions are final.",
-        registrationFee: 150,
+        registrationFee: 200,
         contacts: [
           { name: "Yashaswini N K", phone: "7483464012" },
           { name: "Bharath", phone: "8073355828" },

@@ -64,7 +64,7 @@ export default function LuminusParticles({ startDispersed = false, hideCursor = 
       // Fewer fill particles when dispersed for performance; logo density is handled by main particles.
       const count = mobile
         ? Math.min(220, Math.floor((w * h) / (90 * 90)))
-        : Math.min(700, Math.floor((w * h) / (60 * 60)))
+        : Math.min(550, Math.floor((w * h) / (68 * 68)))
       fillParticles = []
       for (let i = 0; i < count; i++) {
         fillParticles.push({
@@ -127,37 +127,31 @@ export default function LuminusParticles({ startDispersed = false, hideCursor = 
 
     let imageData: ImageData | null = null
     let scrollProgress = 0
+    let targetScrollProgress = 0
     let scrollVelocity = 0
     let lastScrollY = 0
-
 
     const handleScroll = () => {
       if (startDispersed) return
       const doc = document.documentElement
       const max = doc.scrollHeight - window.innerHeight
       scrollVelocity = Math.abs(window.scrollY - lastScrollY)
-      // Cap scroll velocity on mobile so large flicks don't create jerky motion.
-      if (isMobileViewport()) {
-        scrollVelocity = Math.min(scrollVelocity, 40)
-      }
+      // Cap scroll velocity so large scrolls don't cause physics spikes (smoother on PC/laptop).
+      const cap = isMobileViewport() ? 40 : 65
+      scrollVelocity = Math.min(scrollVelocity, cap)
       lastScrollY = window.scrollY
       const rawProgress = max > 0 ? Math.min(window.scrollY / max, 1) : 1
-      // Reach full dispersion earlier so the background is fully scattered
-      // by the time the Hackathon section enters the viewport.
-      // On PC/laptop and mobile use smaller values so dispersion completes with less scroll (faster).
-      // On mobile, finish dispersion very early in the scroll so stars break apart quickly.
-      // On desktop, reduce this a bit more so stars disperse faster with less scroll.
-      // Make mobile slightly slower and smoother by requiring a bit more scroll.
       const dispersionEnd = isMobileViewport() ? 0.18 : 0.24
       const normalized = Math.min(rawProgress / dispersionEnd, 1)
-      // Smoothstep easing so particles start and finish movement more naturally.
-      scrollProgress = normalized * normalized * (3 - 2 * normalized)
+      targetScrollProgress = normalized * normalized * (3 - 2 * normalized)
     }
     if (!startDispersed) {
       scrollProgress = 0
+      targetScrollProgress = 0
       window.addEventListener("scroll", handleScroll, { passive: true })
     } else {
       scrollProgress = 1
+      targetScrollProgress = 1
     }
 
     function loadLogo(): Promise<void> {
@@ -198,8 +192,8 @@ export default function LuminusParticles({ startDispersed = false, hideCursor = 
             const isTextPixel = Math.abs(r - g) < 20 && Math.abs(r - b) < 20 && Math.abs(g - b) < 20 && r > 100
             const wf = isTextPixel ? 0.75 : 0
 
-            // On desktop, slightly thin out non-text particles so the swoosh feels lighter while text stays dense.
-            if (!isMobile && !isTextPixel && Math.random() < 0.3) {
+            // On desktop, thin out non-text particles for smoother performance; text stays dense for legibility.
+            if (!isMobile && !isTextPixel && Math.random() < 0.4) {
               continue
             }
 
@@ -352,9 +346,13 @@ export default function LuminusParticles({ startDispersed = false, hideCursor = 
       if (!visible) return
       ctx.clearRect(0, 0, canvas.width, canvas.height)
 
+      // Smooth lerp of scroll progress so dispersion/re-collection is lag-free (no sudden jumps).
+      const lerpSpeed = isMobileViewport() ? 0.2 : 0.14
+      scrollProgress += (targetScrollProgress - scrollProgress) * lerpSpeed
+
+      const isMobile = isMobileViewport()
       // Draw fill particles when scrolled — fade in with scroll to fill the background.
       // On mobile, skip drawing them once we're mostly dispersed to keep things snappy.
-      const isMobile = isMobileViewport()
       if (fillParticles.length > 0 && scrollProgress > 0 && (!isMobile || scrollProgress < 0.85)) {
         const fillAlpha = 0.05 + 0.2 * scrollProgress
         for (const fp of fillParticles) {
@@ -390,22 +388,21 @@ export default function LuminusParticles({ startDispersed = false, hideCursor = 
           }
         }
 
-        // Spring back toward either logo position or dispersed background position.
-        // On mobile, keep forces softer; on desktop, slightly dampen forces to avoid jitter.
-        const baseSpring = isMobile ? 0.18 : 0.17
-        const dispersionBoost = (1 - disperse) * (isMobile ? 0.14 : 0.12)
-        const scrollBoost = scrollVelocity * (isMobile ? 0.018 : 0.012)
+        // Spring back toward logo or dispersed position. Softer desktop values = smoother, no lag.
+        const baseSpring = isMobile ? 0.18 : 0.14
+        const dispersionBoost = (1 - disperse) * (isMobile ? 0.14 : 0.09)
+        const scrollBoost = scrollVelocity * (isMobile ? 0.018 : 0.008)
         const spring = baseSpring + dispersionBoost + scrollBoost
         p.vx += (targetX - p.x) * spring
         p.vy += (targetY - p.y) * spring
 
-        // Gentle per-particle drift so motion feels organic, not perfectly straight.
-        const noiseStrength = isMobile ? 0.03 : 0.045
+        // Gentle per-particle drift; lower on desktop for smoother motion.
+        const noiseStrength = isMobile ? 0.03 : 0.032
         p.vx += Math.cos(time * 0.0015 + p.phase) * noiseStrength
         p.vy += Math.sin(time * 0.0013 + p.phase) * noiseStrength
 
-        // Velocity clamping and friction for smoother easing.
-        const maxSpeed = isMobile ? 20 : 30
+        // Velocity clamping and friction — higher friction on desktop for smooth easing.
+        const maxSpeed = isMobile ? 20 : 24
         const speed = Math.hypot(p.vx, p.vy)
         if (speed > maxSpeed) {
           const scale = maxSpeed / speed
@@ -413,7 +410,7 @@ export default function LuminusParticles({ startDispersed = false, hideCursor = 
           p.vy *= scale
         }
 
-        const friction = isMobile ? 0.88 : 0.89
+        const friction = isMobile ? 0.88 : 0.91
         p.vx *= friction
         p.vy *= friction
 
@@ -423,9 +420,10 @@ export default function LuminusParticles({ startDispersed = false, hideCursor = 
         const twinkle = 0.6 + 0.4 * Math.sin(time * 0.003 + p.phase)
         const readabilityDim = 1 - 0.45 * scrollProgress
 
-        // When dispersed, draw fewer stars for performance; logo (scrollProgress low) keeps full density.
-        if (scrollProgress > 0.5) {
-          if (!isMobile && idx % 2 === 1) continue
+        // When dispersed, draw fewer stars for performance; full density when logo is collected.
+        if (scrollProgress > 0.45) {
+          if (!isMobile && scrollProgress > 0.65 && idx % 3 !== 0) continue
+          if (!isMobile && scrollProgress <= 0.65 && idx % 2 === 1) continue
           if (isMobile && scrollProgress > 0.7 && idx % 2 === 1) continue
           if (isMobile && scrollProgress > 0.88 && idx % 3 !== 0) continue
         }
@@ -511,9 +509,9 @@ export default function LuminusParticles({ startDispersed = false, hideCursor = 
       visible = false
       cancelAnimationFrame(rafId)
       // Clear canvas dimensions so the browser can reclaim resources between navigations.
-      if (canvasRef.current) {
-        canvasRef.current.width = 0
-        canvasRef.current.height = 0
+      if (canvas) {
+        canvas.width = 0
+        canvas.height = 0
       }
       document.removeEventListener("visibilitychange", onVisibilityChange)
       window.removeEventListener("resize", handleResize)
