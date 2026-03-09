@@ -1,16 +1,16 @@
-import type { Metadata } from "next"
-import Script from "next/script"
-import { GeistSans } from "geist/font/sans"
-import { GeistMono } from "geist/font/mono"
+import type { Metadata } from "next";
+import Script from "next/script";
+import { GeistSans } from "geist/font/sans";
+import { GeistMono } from "geist/font/mono";
 
-import "./globals.css"
-import { ThemeProvider } from "@/components/theme-provider"
-import { Toaster } from "@/components/ui/toaster"
-import { SiteNav } from "@/components/site-nav"
-import { CornerLogos } from "@/components/corner-logos"
+import "./globals.css";
+import { ThemeProvider } from "@/components/theme-provider";
+import { Toaster } from "@/components/ui/toaster";
+import { SiteNav } from "@/components/site-nav";
+import { CornerLogos } from "@/components/corner-logos";
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://luminus.rnsit.ac.in"),
+  metadataBase: new URL("https://prototype-2-omega.vercel.app/"),
   title: "Luminus Techfest",
   description:
     "Luminus Techfest — Register for events, explore the schedule, and be part of the experience.",
@@ -53,16 +53,22 @@ export const metadata: Metadata = {
       { url: "/favicon/favicon-32x32.png", sizes: "32x32", type: "image/png" },
       { url: "/favicon/favicon-16x16.png", sizes: "16x16", type: "image/png" },
     ],
-    apple: [{ url: "/favicon/apple-touch-icon.png", sizes: "180x180", type: "image/png" }],
+    apple: [
+      {
+        url: "/favicon/apple-touch-icon.png",
+        sizes: "180x180",
+        type: "image/png",
+      },
+    ],
   },
   manifest: "/favicon/site.webmanifest",
-}
-import { SiteBackground } from "@/components/site-background"
+};
+import { SiteBackground } from "@/components/site-background";
 
 export default function RootLayout({
   children,
 }: {
-  children: React.ReactNode
+  children: React.ReactNode;
 }) {
   return (
     <html
@@ -70,7 +76,10 @@ export default function RootLayout({
       suppressHydrationWarning
       className={`${GeistSans.variable} ${GeistMono.variable}`}
     >
-      <body suppressHydrationWarning className={`${GeistSans.className} antialiased text-white`}>
+      <body
+        suppressHydrationWarning
+        className={`${GeistSans.className} antialiased text-white`}
+      >
         <Script id="chunk-load-recovery" strategy="beforeInteractive">
           {`
             (function () {
@@ -127,5 +136,5 @@ export default function RootLayout({
         </ThemeProvider>
       </body>
     </html>
-  )
+  );
 }
