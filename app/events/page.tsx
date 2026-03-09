@@ -1,10 +1,10 @@
-import type { Metadata } from "next"
-import Link from "next/link"
-import { departments } from "@/lib/events-data"
-import LuminusParticles from "../Home page/vercel-logo-particles"
-import { GlowEffect } from "@/components/ui/glow-effect"
+import type { Metadata } from "next";
+import Link from "next/link";
+import { departments } from "@/lib/events-data";
+import LuminusParticles from "../Home page/vercel-logo-particles";
+import { GlowEffect } from "@/components/ui/glow-effect";
 
-const GRAND_HACKATHON_ID = "grand-hackathon"
+const GRAND_HACKATHON_ID = "grand-hackathon";
 
 export const metadata: Metadata = {
   title: "Events · Luminus Techfest",
@@ -17,17 +17,19 @@ export const metadata: Metadata = {
     images: [
       {
         url: "/og-luminus-2026.png",
-        width: 1230,
+        width: 1200,
         height: 630,
         alt: "Luminus Techfest 2026 hero graphic",
       },
     ],
   },
-}
+};
 
 export default function EventsPage() {
-  const grandHackathon = departments.find((d) => d.id === GRAND_HACKATHON_ID)
-  const otherDepartments = departments.filter((d) => d.id !== GRAND_HACKATHON_ID)
+  const grandHackathon = departments.find((d) => d.id === GRAND_HACKATHON_ID);
+  const otherDepartments = departments.filter(
+    (d) => d.id !== GRAND_HACKATHON_ID,
+  );
 
   return (
     <main className="relative min-h-screen">
@@ -60,7 +62,13 @@ export default function EventsPage() {
                     }}
                   >
                     <GlowEffect
-                      colors={["#3b82f6", "#6366f1", "#9333ea", "#a78bfa", "#60a5fa"]}
+                      colors={[
+                        "#3b82f6",
+                        "#6366f1",
+                        "#9333ea",
+                        "#a78bfa",
+                        "#60a5fa",
+                      ]}
                       mode="breathe"
                       blur="soft"
                       scale={1.04}
@@ -70,28 +78,37 @@ export default function EventsPage() {
                     <div
                       className="relative overflow-hidden rounded-3xl border border-white/[0.12] bg-black backdrop-blur-2xl transition-all duration-300"
                       style={{
-                        boxShadow: "0 0 0 1px rgba(255,255,255,0.04), 0 4px 24px rgba(0,0,0,0.35)",
+                        boxShadow:
+                          "0 0 0 1px rgba(255,255,255,0.04), 0 4px 24px rgba(0,0,0,0.35)",
                       }}
                     >
-                    <div className="relative pl-8 pr-7 py-7 sm:pl-11 sm:py-9">
-                      <p className="mb-2 text-[10px] font-medium uppercase tracking-[0.28em] text-amber-400/70">
-                        Featured
-                      </p>
-                      <h2 className="text-2xl font-semibold tracking-tight text-white sm:text-3xl">
-                        {grandHackathon.fullName ?? grandHackathon.name}
-                      </h2>
-                      <p className="mt-2 text-base text-amber-200/80">
-                        3 tracks · 24 hr · ₹1,20,000+ prize pool
-                      </p>
-                      <p className="mt-3 text-sm text-white/55 leading-relaxed max-w-xl">
-                        Solaris X is a 24-hour engineering sprint focused on building scalable, real-world systems utilizing modern AI frameworks and cutting-edge development technologies. Under the theme <strong className="text-white/90 font-medium">&ldquo;Engineering the Systems of Tomorrow,&rdquo;</strong> participants will design, build, and deploy impactful solutions across three powerful tracks.
-                      </p>
-                      <p className="mt-3 text-sm text-white/50 transition-colors group-hover:text-white/70">
-                        View details →
-                      </p>
+                      <div className="relative pl-8 pr-7 py-7 sm:pl-11 sm:py-9">
+                        <p className="mb-2 text-[10px] font-medium uppercase tracking-[0.28em] text-amber-400/70">
+                          Featured
+                        </p>
+                        <h2 className="text-2xl font-semibold tracking-tight text-white sm:text-3xl">
+                          {grandHackathon.fullName ?? grandHackathon.name}
+                        </h2>
+                        <p className="mt-2 text-base text-amber-200/80">
+                          3 tracks · 24 hr · ₹1,20,000+ prize pool
+                        </p>
+                        <p className="mt-3 text-sm text-white/55 leading-relaxed max-w-xl">
+                          Solaris X is a 24-hour engineering sprint focused on
+                          building scalable, real-world systems utilizing modern
+                          AI frameworks and cutting-edge development
+                          technologies. Under the theme{" "}
+                          <strong className="text-white/90 font-medium">
+                            &ldquo;Engineering the Systems of Tomorrow,&rdquo;
+                          </strong>{" "}
+                          participants will design, build, and deploy impactful
+                          solutions across three powerful tracks.
+                        </p>
+                        <p className="mt-3 text-sm text-white/50 transition-colors group-hover:text-white/70">
+                          View details →
+                        </p>
+                      </div>
                     </div>
                   </div>
-                </div>
                 </div>
               </Link>
             </section>
@@ -112,7 +129,8 @@ export default function EventsPage() {
                     {dept.fullName ?? dept.name}
                   </p>
                   <p className="mt-1 text-xs text-white/45">
-                    {dept.events.length} event{dept.events.length !== 1 ? "s" : ""}
+                    {dept.events.length} event
+                    {dept.events.length !== 1 ? "s" : ""}
                   </p>
                   <div className="mt-2 flex flex-wrap gap-1">
                     {dept.events.map((ev) => (
@@ -124,7 +142,10 @@ export default function EventsPage() {
                       </span>
                     ))}
                   </div>
-                  <span className="mt-auto pt-2 text-white/30 text-xs transition-all group-hover:text-white/50" aria-hidden>
+                  <span
+                    className="mt-auto pt-2 text-white/30 text-xs transition-all group-hover:text-white/50"
+                    aria-hidden
+                  >
                     View →
                   </span>
                 </Link>
@@ -134,5 +155,5 @@ export default function EventsPage() {
         </div>
       </div>
     </main>
-  )
+  );
 }

@@ -1,20 +1,20 @@
-import type { Metadata } from "next"
-import dynamic from "next/dynamic"
+import type { Metadata } from "next";
+import dynamic from "next/dynamic";
 
 const VercelLogoParticles = dynamic(
   () => import("./Home page/vercel-logo-particles").then((m) => m.default),
-  { ssr: false }
-)
+  { ssr: false },
+);
 
 const HackathonSectionWrapper = dynamic(
   () => import("@/components/hackathon-section-wrapper"),
   { ssr: false },
-)
+);
 
 const EventsSectionWrapper = dynamic(
   () => import("@/components/events-section-wrapper"),
   { ssr: false },
-)
+);
 
 export const metadata: Metadata = {
   title: "Luminus Techfest · Home",
@@ -27,13 +27,13 @@ export const metadata: Metadata = {
     images: [
       {
         url: "/og-luminus-2026.png",
-        width: 1230,
+        width: 1200,
         height: 630,
         alt: "Luminus Techfest 2026 hero graphic",
       },
     ],
   },
-}
+};
 
 export default function Page() {
   return (
@@ -48,6 +48,5 @@ export default function Page() {
         </div>
       </div>
     </main>
-  )
+  );
 }
-

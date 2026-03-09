@@ -1,4 +1,4 @@
-import type { Metadata } from "next"
+import type { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "Schedule · Luminus Techfest",
@@ -11,13 +11,13 @@ export const metadata: Metadata = {
     images: [
       {
         url: "/og-luminus-2026.png",
-        width: 1230,
+        width: 1200,
         height: 630,
         alt: "Luminus Techfest 2026 hero graphic",
       },
     ],
   },
-}
+};
 
 export default function SchedulePage() {
   return (
@@ -32,5 +32,5 @@ export default function SchedulePage() {
         </div>
       </div>
     </main>
-  )
+  );
 }
