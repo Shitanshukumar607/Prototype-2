@@ -383,9 +383,9 @@ export default function LuminusParticles({ startDispersed = false, hideCursor = 
       scrollProgress += (targetScrollProgress - scrollProgress) * lerpSpeed
 
       const isMobile = isMobileViewport()
-      // Draw fill particles when scrolled — fade in with scroll to fill the background.
-      // On mobile, skip drawing them once we're mostly dispersed to keep things snappy.
-      if (fillParticles.length > 0 && scrollProgress > 0 && (!isMobile || scrollProgress < 0.85)) {
+      // Draw extra background fill particles only on desktop so mobile never
+      // turns into an overly noisy/starry background when scrolling.
+      if (!isMobile && fillParticles.length > 0 && scrollProgress > 0) {
         const fillAlpha = 0.05 + 0.2 * scrollProgress
         const time002 = time * 0.002
         for (let i = 0; i < fillParticles.length; i++) {

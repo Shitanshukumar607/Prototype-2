@@ -35,11 +35,7 @@ export default function HackathonSection() {
 
         .hack-root {
           font-family: 'Space Mono', monospace;
-          /* Give this section its own dark glass background so the global starfield
-             looks consistent and doesn't get harsh/overexposed as you scroll. */
-          background:
-            radial-gradient(circle at top, rgba(15,23,42,0.85), transparent 55%),
-            rgba(3,7,18,0.96);
+          background: transparent;
           min-height: 100vh;
           width: 100%;
           display: flex;
