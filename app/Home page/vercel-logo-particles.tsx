@@ -65,7 +65,8 @@ export default function LuminusParticles({ startDispersed = false, hideCursor = 
       // Fewer fill particles when dispersed for performance; logo density is handled by main particles.
       const count = mobile
         ? Math.min(220, Math.floor((w * h) / (90 * 90)))
-        : Math.min(550, Math.floor((w * h) / (68 * 68)))
+        // On desktop, keep density lower so the animation stays smooth even on mid‑range GPUs.
+        : Math.min(380, Math.floor((w * h) / (80 * 80)))
       fillParticles = []
       for (let i = 0; i < count; i++) {
         const r = 200 + Math.floor(Math.random() * 55)
@@ -87,8 +88,8 @@ export default function LuminusParticles({ startDispersed = false, hideCursor = 
       const h = window.innerHeight
       const prevW = canvas.width
       const prevH = canvas.height
-      // Keep DPR low on mobile to avoid over-rendering the canvas.
-      const dprCap = isMobileViewport() ? 1 : 2
+      // Keep DPR capped so we don't over-render the canvas; slightly under native on desktop for smoother animation.
+      const dprCap = isMobileViewport() ? 1 : 1.5
       const dpr = Math.min(typeof window !== "undefined" ? window.devicePixelRatio || 1 : 1, dprCap)
       const nextW = Math.max(1, Math.round(w * dpr))
       const nextH = Math.max(1, Math.round(h * dpr))
