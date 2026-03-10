@@ -25,6 +25,15 @@ interface EventRegisterDialogProps {
   registrationOpen?: boolean
 }
 
+const INNOVATRIUM_TRACKS = [
+  "VLSI",
+  "Signal Processing",
+  "Communication",
+  "Embedded Systems and IoT",
+  "Robotics",
+  "Photonics",
+] as const
+
 function parseTeamSize(teamSize: string): { min: number; max: number } {
   const cleaned = teamSize.toLowerCase().trim()
 
@@ -78,13 +87,16 @@ export function EventRegisterDialog({
     Array.from({ length: min }, (_, i) => i + 1)
   )
   const [collegeValues, setCollegeValues] = useState<Record<number, string>>({})
+  const isInnovatrium = departmentId === "ece" && eventName === "Innovatrium"
+  const [selectedTrack, setSelectedTrack] = useState<string>("")
 
   useEffect(() => {
     if (open) {
       setParticipantSlots(Array.from({ length: min }, (_, i) => i + 1))
       setCollegeValues({})
+      if (isInnovatrium) setSelectedTrack("")
     }
-  }, [min, open])
+  }, [min, open, isInnovatrium])
 
   return (
     <Dialog
@@ -133,6 +145,12 @@ export function EventRegisterDialog({
               }
               e.preventDefault()
               setErrorMessage(null)
+
+              if (isInnovatrium && !selectedTrack) {
+                setErrorMessage("Please select one Innovatrium track before registering.")
+                return
+              }
+
               const formData = new FormData(form)
               const payloadParticipants: Array<{
                 participantNumber: number
@@ -141,6 +159,7 @@ export function EventRegisterDialog({
                 studentId: string
                 email: string
                 phoneNumber: string
+                track?: string
               }> = []
 
               for (const memberIndex of participantSlots) {
@@ -167,6 +186,7 @@ export function EventRegisterDialog({
                   studentId,
                   email,
                   phoneNumber,
+                  ...(isInnovatrium ? { track: selectedTrack } : {}),
                 })
               }
 
@@ -229,6 +249,50 @@ export function EventRegisterDialog({
             }}
             className="space-y-5 text-sm px-6 pb-5 pt-4"
           >
+            {isInnovatrium && (
+              <section className="space-y-3 rounded-2xl border border-white/[0.10] bg-white/[0.02] px-4 py-4 backdrop-blur-xl">
+                <header className="flex items-baseline justify-between gap-3">
+                  <p className="text-[11px] uppercase tracking-[0.18em] text-white/55 font-medium">
+                    Innovatrium track *
+                  </p>
+                  <span className="text-[10px] text-white/35">
+                    Choose one focused stream per team.
+                  </span>
+                </header>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1.5">
+                  {INNOVATRIUM_TRACKS.map((track) => {
+                    const active = selectedTrack === track
+                    return (
+                      <button
+                        key={track}
+                        type="button"
+                        aria-pressed={active}
+                        onClick={() => setSelectedTrack(track)}
+                        className={`
+                          flex items-center justify-between rounded-2xl px-3.5 py-2.5 text-[13px]
+                          border transition-all duration-200
+                          ${active
+                            ? "border-amber-300/80 bg-amber-300/10 text-white shadow-[0_0_0_1px_rgba(251,191,36,0.18)]"
+                            : "border-white/12 bg-black/40 text-white/75 hover:border-white/30 hover:bg-black/30"}
+                        `}
+                      >
+                        <span className="truncate">{track}</span>
+                        <span
+                          className={`ml-2 h-2.5 w-2.5 rounded-full ${
+                            active
+                              ? "bg-amber-300 shadow-[0_0_0_4px_rgba(251,191,36,0.28)]"
+                              : "bg-white/22"
+                          }`}
+                          aria-hidden
+                        />
+                      </button>
+                    )
+                  })}
+                </div>
+              </section>
+            )}
+
             {!registrationOpen && (
               <div className="rounded-2xl border border-white/10 bg-white/[0.04] px-4 py-3 text-sm text-white/70">
                 Registrations for this event are currently closed.

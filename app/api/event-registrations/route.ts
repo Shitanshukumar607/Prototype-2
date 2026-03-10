@@ -10,6 +10,8 @@ const participantSchema = z.object({
   studentId: z.string().min(1),
   email: z.string().email(),
   phoneNumber: z.string().min(5),
+  // Optional per-participant track (used for Innovatrium; stored in JSON).
+  track: z.string().min(1).optional(),
 })
 
 const registrationSchema = z.object({

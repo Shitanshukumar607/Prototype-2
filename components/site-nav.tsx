@@ -110,16 +110,23 @@ export function SiteNav() {
   // Prefetch top-level routes so nav taps feel instant.
   useEffect(() => {
     if (typeof window === "undefined") return
-    const id =
-      "requestIdleCallback" in window
-        ? (window as any).requestIdleCallback(() => navItems.forEach((i) => router.prefetch(i.href)))
-        : window.setTimeout(() => navItems.forEach((i) => router.prefetch(i.href)), 250)
+    let idleId: number | null = null
+    let timeoutId: ReturnType<typeof setTimeout> | null = null
+
+    // Use global setTimeout to avoid TS lib confusion in some environments.
+    if ("requestIdleCallback" in window) {
+      idleId = (window as any).requestIdleCallback(() => navItems.forEach((i) => router.prefetch(i.href)))
+    } else {
+      timeoutId = setTimeout(() => navItems.forEach((i) => router.prefetch(i.href)), 250)
+    }
+
     return () => {
       if ("cancelIdleCallback" in window) {
-        try { (window as any).cancelIdleCallback(id) } catch {}
-      } else {
-        window.clearTimeout(id)
+        try {
+          if (idleId != null) (window as any).cancelIdleCallback(idleId)
+        } catch {}
       }
+      if (timeoutId != null) clearTimeout(timeoutId)
     }
   }, [router])
 
