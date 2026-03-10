@@ -17,6 +17,7 @@ export function SiteBackground() {
     const [defer3D, setDefer3D] = useState(true);
     const isEventsPage = pathname?.startsWith("/events") ?? false;
     const isContactPage = pathname === "/contact";
+    const isHomePage = pathname === "/";
     const hidePurpleGradient = isEventsPage || isContactPage;
     const objectsZ = isEventsPage || isContactPage ? "z-[11]" : "z-0";
 
@@ -84,10 +85,11 @@ export function SiteBackground() {
             {/* Floating 3D Objects — desktop only, after first paint to keep initial load light */}
             {isDesktop && !defer3D && <RandomObjects zIndexClass={objectsZ} />}
 
-            {/* Scroll-triggered Black Overlay — fades in on scroll so purplish theme vanishes; particle canvas (z-10) stays on top */}
+            {/* Scroll-triggered Black Overlay — disabled on home so hero stays consistent,
+                still used on inner pages (e.g. schedule/contact) to darken long scrolls. */}
             <div
                 className="pointer-events-none fixed inset-0 w-full h-[100vh] bg-black z-[2]"
-                style={{ opacity: isEventsPage ? 0 : fadeOpacity }}
+                style={{ opacity: isEventsPage || isHomePage ? 0 : fadeOpacity }}
                 aria-hidden
             />
         </>
