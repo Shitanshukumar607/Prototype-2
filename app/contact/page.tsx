@@ -83,17 +83,19 @@ export default function ContactPage() {
   const [hasCopiedHelpdesk, setHasCopiedHelpdesk] = useState(false)
   const [copiedPhone, setCopiedPhone] = useState<string | null>(null)
 
-  const copyToClipboard = (text: string, key?: string) => {
-    if (!navigator.clipboard) return
-    navigator.clipboard
+  const copyToClipboard = (text: string, key?: string): Promise<boolean> => {
+    if (!navigator.clipboard) return Promise.resolve(false)
+
+    return navigator.clipboard
       .writeText(text)
       .then(() => {
         if (key) {
           setCopiedPhone(key)
           setTimeout(() => setCopiedPhone(null), 1500)
         }
+        return true
       })
-      .catch(() => {})
+      .catch(() => false)
   }
 
   return (
@@ -133,9 +135,11 @@ export default function ContactPage() {
                         type="button"
                         aria-label="Copy helpdesk email"
                         onClick={() => {
-                          copyToClipboard("helpdesk.luminus@gmail.com")
-                          setHasCopiedHelpdesk(true)
-                          setTimeout(() => setHasCopiedHelpdesk(false), 1500)
+                          copyToClipboard("helpdesk.luminus@gmail.com").then((ok) => {
+                            if (!ok) return
+                            setHasCopiedHelpdesk(true)
+                            setTimeout(() => setHasCopiedHelpdesk(false), 1500)
+                          })
                         }}
                         className="inline-flex h-6 w-6 items-center justify-center rounded-full border border-white/20 bg-white/5 text-white/60 hover:text-white hover:border-white/40 transition-colors focus-visible:outline-none focus-visible:ring-0"
                       >
@@ -258,7 +262,7 @@ export default function ContactPage() {
             <h2 className="text-[11px] font-medium uppercase tracking-[0.2em] text-white/40 mb-6 px-1">
               Frequently asked questions
             </h2>
-            <div className="rounded-3xl border border-white/[0.08] bg-white/[0.04] hover:bg-white/[0.06] transition-colors duration-500 backdrop-blur-2xl px-6 sm:px-10 overflow-hidden shadow-2xl">
+            <div className="rounded-3xl border border-white/[0.08] bg-white/[0.04] hover:bg-white/[0.06] transition-colors duration-500 backdrop-blur-2xl px-5 sm:px-7 overflow-hidden shadow-2xl">
               <Accordion type="single" collapsible className="w-full">
                 {FAQ_ITEMS.map((item, i) => (
                   <AccordionItem
@@ -266,10 +270,10 @@ export default function ContactPage() {
                     value={`faq-${i}`}
                     className="border-b border-white/[0.06] last:border-none group"
                   >
-                    <AccordionTrigger className="text-left text-white/70 hover:text-white py-7 hover:no-underline transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] font-medium text-[15px] sm:text-[17px] tracking-tight [&[data-state=open]]:text-white [&>svg]:text-white/30 [&>svg]:hover:text-white/70 [&[data-state=open]>svg]:text-white">
+                    <AccordionTrigger className="text-left text-white/70 hover:text-white py-5 hover:no-underline transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] font-medium text-[15px] sm:text-[16px] tracking-tight [&[data-state=open]]:text-white [&>svg]:text-white/30 [&>svg]:hover:text-white/70 [&[data-state=open]>svg]:text-white">
                       {item.q}
                     </AccordionTrigger>
-                    <AccordionContent className="text-white/55 text-[14px] sm:text-[15px] pb-7 leading-relaxed pr-8 sm:pr-12">
+                    <AccordionContent className="text-white/55 text-[14px] sm:text-[15px] pb-5 leading-relaxed pr-6 sm:pr-10">
                       {item.a}
                     </AccordionContent>
                   </AccordionItem>

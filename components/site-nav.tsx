@@ -244,7 +244,7 @@ export function SiteNav() {
             {/* Search icon */}
             <button
               onClick={() => setIsSearchOpen(true)}
-              className="relative z-10 rounded-2xl p-2 text-white/60 hover:text-white/90 hover:bg-black/[0.06] active:bg-black/[0.08] transition-colors duration-200"
+              className="relative z-10 rounded-2xl p-2 text-white/60 hover:text-white/90 hover:bg-black/[0.06] active:bg-black/[0.08] transition-colors duration-200 focus:outline-none focus-visible:outline-none focus-visible:ring-0"
               aria-label="Open search"
               tabIndex={isSearchOpen ? -1 : 0}
             >
@@ -261,7 +261,7 @@ export function SiteNav() {
                     href={href}
                     tabIndex={isSearchOpen ? -1 : 0}
                     className={cn(
-                      "relative z-10 rounded-2xl px-3 py-2 text-sm font-medium transition-colors duration-200",
+                      "relative z-10 rounded-2xl px-3 py-2 text-sm font-medium transition-colors duration-200 focus:outline-none focus-visible:outline-none focus-visible:ring-0",
                       "text-white hover:text-white",
                       isActive && "text-white",
                       !isActive && "hover:bg-black/[0.06] active:bg-black/[0.08]"
