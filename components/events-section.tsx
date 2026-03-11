@@ -265,9 +265,9 @@ export default function EventsSection({ scrollProgress }: EventsSectionProps) {
       }}>
 
         {/* ── HEX GRID ── */}
-        <div style={{
+        <div className="hidden md:flex" style={{
           flexShrink: 0,
-          display: "flex",
+          // display: "flex",
           justifyContent: isMobile ? "center" : "flex-start",
           width: isMobile ? "100%" : "auto",
           overflowX: isMobile ? "auto" : "visible",
