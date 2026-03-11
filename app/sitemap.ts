@@ -1,7 +1,7 @@
 import type { MetadataRoute } from "next";
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const baseUrl = "https://prototype-2-omega.vercel.app/";
+  const baseUrl = "https://luminus.rnsit.ac.in";
 
   const routes = ["/", "/events", "/about", "/schedule", "/contact"];
 

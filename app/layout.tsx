@@ -10,7 +10,7 @@ import { SiteNav } from "@/components/site-nav";
 import { CornerLogos } from "@/components/corner-logos";
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://prototype-2-omega.vercel.app/"),
+  metadataBase: new URL("https://luminus.rnsit.ac.in"),
   title: "Luminus Techfest",
   description:
     "Luminus Techfest — Register for events, explore the schedule, and be part of the experience.",
