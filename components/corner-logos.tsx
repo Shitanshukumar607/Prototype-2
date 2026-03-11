@@ -10,6 +10,7 @@ import luminusLogoImg from "@/assets/luminus_logo.png"
 export function CornerLogos() {
   const [visible, setVisible] = useState(true)
   const pathname = usePathname()
+  const isHome = pathname === "/"
 
   useEffect(() => {
     if (typeof window === "undefined") return
@@ -74,7 +75,10 @@ export function CornerLogos() {
           alt="RNSIT Bengaluru"
           width={80}
           height={80}
-          priority
+          // Avoid <link rel="preload"> to prevent browser console warnings.
+          // Still fetch eagerly on home for good LCP.
+          loading={isHome ? "eager" : "lazy"}
+          fetchPriority={isHome ? "high" : "auto"}
           className="h-10 w-auto max-h-10 object-contain sm:h-20 sm:max-h-20"
         />
       </div>
@@ -86,7 +90,8 @@ export function CornerLogos() {
           alt={rightLogoAlt}
           width={rightLogoWidth}
           height={rightLogoHeight}
-          priority
+          // Avoid preloading (can warn if hidden/not used immediately).
+          loading="eager"
           className={rightLogoClassName}
         />
       </div>

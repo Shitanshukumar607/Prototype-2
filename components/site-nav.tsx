@@ -107,6 +107,29 @@ export function SiteNav() {
   const searchResults = useMemo(() => getSearchResults(searchQuery), [searchQuery])
   const mobileSearchResults = useMemo(() => getSearchResults(mobileSearchQuery), [mobileSearchQuery])
 
+  // Prefetch top-level routes so nav taps feel instant.
+  useEffect(() => {
+    if (typeof window === "undefined") return
+    let idleId: number | null = null
+    let timeoutId: ReturnType<typeof setTimeout> | null = null
+
+    // Use global setTimeout to avoid TS lib confusion in some environments.
+    if ("requestIdleCallback" in window) {
+      idleId = (window as any).requestIdleCallback(() => navItems.forEach((i) => router.prefetch(i.href)))
+    } else {
+      timeoutId = setTimeout(() => navItems.forEach((i) => router.prefetch(i.href)), 250)
+    }
+
+    return () => {
+      if ("cancelIdleCallback" in window) {
+        try {
+          if (idleId != null) (window as any).cancelIdleCallback(idleId)
+        } catch {}
+      }
+      if (timeoutId != null) clearTimeout(timeoutId)
+    }
+  }, [router])
+
   const closeSearch = () => {
     setIsSearchOpen(false)
     setSearchQuery("")
@@ -131,6 +154,34 @@ export function SiteNav() {
       return () => clearTimeout(t)
     }
   }, [isMobileSearchOpen])
+
+  // Mobile search UX: lock scroll + ESC to close + close on route change.
+  useEffect(() => {
+    if (!isMobileSearchOpen) return
+
+    const prevOverflow = document.body.style.overflow
+    document.body.style.overflow = "hidden"
+
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        setIsMobileSearchOpen(false)
+        setMobileSearchQuery("")
+      }
+    }
+    window.addEventListener("keydown", onKeyDown)
+
+    return () => {
+      document.body.style.overflow = prevOverflow
+      window.removeEventListener("keydown", onKeyDown)
+    }
+  }, [isMobileSearchOpen])
+
+  useEffect(() => {
+    // If navigation happens while open, close cleanly.
+    setIsMobileSearchOpen(false)
+    setMobileSearchQuery("")
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pathname])
 
   const activeIndex = navItems.findIndex(({ href }) =>
     href === "/" ? pathname === "/" : pathname.startsWith(href)
@@ -244,7 +295,7 @@ export function SiteNav() {
             {/* Search icon */}
             <button
               onClick={() => setIsSearchOpen(true)}
-              className="relative z-10 rounded-2xl p-2 text-white/60 hover:text-white/90 hover:bg-black/[0.06] active:bg-black/[0.08] transition-colors duration-200"
+              className="relative z-10 rounded-2xl p-2 text-white/60 hover:text-white/90 hover:bg-black/[0.06] active:bg-black/[0.08] transition-colors duration-200 focus:outline-none focus-visible:outline-none focus-visible:ring-0"
               aria-label="Open search"
               tabIndex={isSearchOpen ? -1 : 0}
             >
@@ -259,9 +310,10 @@ export function SiteNav() {
                   <Link
                     ref={(el) => { linkRefs.current[i] = el }}
                     href={href}
+                    prefetch
                     tabIndex={isSearchOpen ? -1 : 0}
                     className={cn(
-                      "relative z-10 rounded-2xl px-3 py-2 text-sm font-medium transition-colors duration-200",
+                      "relative z-10 rounded-2xl px-3 py-2 text-sm font-medium transition-colors duration-200 focus:outline-none focus-visible:outline-none focus-visible:ring-0",
                       "text-white hover:text-white",
                       isActive && "text-white",
                       !isActive && "hover:bg-black/[0.06] active:bg-black/[0.08]"
@@ -328,7 +380,7 @@ export function SiteNav() {
         </div>
 
         {/* Search results dropdown */}
-        {isSearchOpen && searchResults.length > 0 && (
+        {isSearchOpen && (searchQuery.trim() !== "") && (
           <div
             style={{
               position: "absolute",
@@ -346,42 +398,53 @@ export function SiteNav() {
               boxShadow: "0 16px 48px rgba(0,0,0,0.5)",
             }}
           >
-            {searchResults.map((result, i) => (
-              <button
-                key={`${result.url}-${result.label}`}
-                onMouseDown={(e) => { e.preventDefault(); navigateTo(result.url) }}
-                style={{
-                  width: "100%",
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "0.75rem",
-                  padding: "0.65rem 1rem",
-                  background: selectedIndex === i ? "rgba(255,255,255,0.07)" : "transparent",
-                  borderBottom: i < searchResults.length - 1 ? "1px solid rgba(255,255,255,0.05)" : "none",
-                  cursor: "pointer",
-                  textAlign: "left",
-                  transition: "background 0.15s",
-                }}
-                onMouseEnter={() => setSelectedIndex(i)}
-                onMouseLeave={() => setSelectedIndex(-1)}
-              >
-                <Search size={13} style={{ flexShrink: 0, color: "rgba(255,255,255,0.3)" }} />
-                <div style={{ flex: 1, minWidth: 0 }}>
-                  <div style={{ fontSize: "13px", color: "rgba(255,255,255,0.9)", fontWeight: 500, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
-                    {result.label}
-                  </div>
-                  <div style={{ fontSize: "11px", color: "rgba(255,255,255,0.38)", marginTop: "1px" }}>
-                    {result.sublabel}
-                  </div>
+            {searchResults.length === 0 ? (
+              <div style={{ padding: "0.9rem 1rem" }}>
+                <div style={{ fontSize: "12px", color: "rgba(255,255,255,0.55)", fontWeight: 500 }}>
+                  No results for &ldquo;{searchQuery.trim()}&rdquo;
                 </div>
-                {result.isFlagship && (
-                  <span style={{ flexShrink: 0, fontSize: "9px", color: "rgba(168,85,247,0.8)", border: "1px solid rgba(168,85,247,0.3)", borderRadius: 4, padding: "2px 5px", letterSpacing: "0.1em", textTransform: "uppercase" }}>
-                    Flagship
-                  </span>
-                )}
-                <ArrowUpRight size={13} style={{ flexShrink: 0, color: "rgba(255,255,255,0.2)" }} />
-              </button>
-            ))}
+                <div style={{ fontSize: "11px", color: "rgba(255,255,255,0.28)", marginTop: 4 }}>
+                  Try a department name (e.g. CSE) or an event name.
+                </div>
+              </div>
+            ) : (
+              searchResults.map((result, i) => (
+                <button
+                  key={`${result.url}-${result.label}`}
+                  onMouseDown={(e) => { e.preventDefault(); navigateTo(result.url) }}
+                  style={{
+                    width: "100%",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "0.75rem",
+                    padding: "0.65rem 1rem",
+                    background: selectedIndex === i ? "rgba(255,255,255,0.07)" : "transparent",
+                    borderBottom: i < searchResults.length - 1 ? "1px solid rgba(255,255,255,0.05)" : "none",
+                    cursor: "pointer",
+                    textAlign: "left",
+                    transition: "background 0.15s",
+                  }}
+                  onMouseEnter={() => setSelectedIndex(i)}
+                  onMouseLeave={() => setSelectedIndex(-1)}
+                >
+                  <Search size={13} style={{ flexShrink: 0, color: "rgba(255,255,255,0.3)" }} />
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <div style={{ fontSize: "13px", color: "rgba(255,255,255,0.9)", fontWeight: 500, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                      {result.label}
+                    </div>
+                    <div style={{ fontSize: "11px", color: "rgba(255,255,255,0.38)", marginTop: "1px" }}>
+                      {result.sublabel}
+                    </div>
+                  </div>
+                  {result.isFlagship && (
+                    <span style={{ flexShrink: 0, fontSize: "9px", color: "rgba(168,85,247,0.8)", border: "1px solid rgba(168,85,247,0.3)", borderRadius: 4, padding: "2px 5px", letterSpacing: "0.1em", textTransform: "uppercase" }}>
+                      Flagship
+                    </span>
+                  )}
+                  <ArrowUpRight size={13} style={{ flexShrink: 0, color: "rgba(255,255,255,0.2)" }} />
+                </button>
+              ))
+            )}
           </div>
         )}
 
@@ -441,18 +504,31 @@ export function SiteNav() {
           <div style={{
             borderRadius: 24,
             overflow: "hidden",
-            background: "rgba(8,8,12,0.85)",
+            // Slightly more opaque + subtle gradient so items stay readable over busy backgrounds.
+            background: "linear-gradient(180deg, rgba(10,10,12,0.96), rgba(6,6,8,0.94))",
             backdropFilter: "blur(16px)",
             WebkitBackdropFilter: "blur(16px)",
-            border: "1px solid rgba(255,255,255,0.08)",
-            boxShadow: "0 24px 48px rgba(0,0,0,0.45)",
+            border: "1px solid rgba(255,255,255,0.10)",
+            boxShadow: "0 26px 60px rgba(0,0,0,0.55)",
           }}>
+
+            {/* Soft top highlight */}
+            <div
+              aria-hidden
+              style={{
+                position: "absolute",
+                inset: 0,
+                pointerEvents: "none",
+                background:
+                  "radial-gradient(120% 70% at 50% 0%, rgba(255,255,255,0.06), rgba(255,255,255,0.02) 40%, rgba(0,0,0,0) 70%)",
+              }}
+            />
 
 
             {/* Header */}
             <div style={{
               display: "flex", alignItems: "center", justifyContent: "space-between",
-              padding: "16px 20px 12px",
+              padding: "14px 18px 10px",
               borderBottom: "1px solid rgba(255,255,255,0.06)",
             }}>
               <span style={{
@@ -466,50 +542,72 @@ export function SiteNav() {
               <div style={{
                 display: "flex", alignItems: "center", gap: 5,
               }}>
-                <div style={{ width: 5, height: 5, borderRadius: "50%", background: "rgba(139,92,246,0.5)" }} />
-                <div style={{ width: 5, height: 5, borderRadius: "50%", background: "rgba(59,130,246,0.35)" }} />
+                <div style={{ width: 5, height: 5, borderRadius: "50%", background: "rgba(59,130,246,0.55)" }} />
+                <div style={{ width: 5, height: 5, borderRadius: "50%", background: "rgba(34,211,238,0.42)" }} />
               </div>
             </div>
 
             {/* Nav items */}
-            <nav style={{ padding: "8px 10px" }}>
+            <nav style={{ padding: "10px 12px 10px" }}>
               {navItems.map(({ href, label, icon: Icon }, index) => {
                 const isActive = activeIndex === index
+                const accent = "rgba(59,130,246,0.95)"
                 return (
                   <Link
                     key={href}
                     href={href}
+                    prefetch
                     onClick={() => setIsMobileMenuOpen(false)}
                     style={{
-                      display: "flex", alignItems: "center", gap: 13,
-                      padding: "11px 12px",
-                      borderRadius: 14,
-                      marginBottom: 3,
+                      position: "relative",
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 12,
+                      padding: "12px 12px",
+                      borderRadius: 18,
+                      marginBottom: 8,
                       textDecoration: "none",
-                      background: isActive
-                        ? "rgba(255,255,255,0.07)"
-                        : "transparent",
-                      border: isActive
-                        ? "1px solid rgba(255,255,255,0.09)"
-                        : "1px solid transparent",
-                      transition: "all 0.2s ease",
+                      // Match Events card language: neutral glass cards (no per-item tint).
+                      background: isActive ? "rgba(255,255,255,0.07)" : "rgba(0,0,0,0.22)",
+                      backdropFilter: "blur(18px)",
+                      WebkitBackdropFilter: "blur(18px)",
+                      border: isActive ? "1px solid rgba(255,255,255,0.18)" : "1px solid rgba(255,255,255,0.08)",
+                      boxShadow: isActive
+                        ? "0 22px 50px rgba(0,0,0,0.55), 0 0 0 1px rgba(255,255,255,0.04), 0 0 22px rgba(59,130,246,0.10)"
+                        : "0 18px 40px rgba(0,0,0,0.35)",
+                      transition: "transform 160ms ease, border-color 180ms ease, box-shadow 220ms ease, background 220ms ease",
                       animation: isMobileMenuOpen
                         ? `glassItemIn 0.35s cubic-bezier(0.22,1,0.36,1) ${0.1 + index * 0.06}s both`
                         : "none",
                     }}
                   >
+                    {/* Subtle active edge (single accent only) */}
+                    <div
+                      aria-hidden
+                      style={{
+                        position: "absolute",
+                        inset: 0,
+                        borderRadius: 18,
+                        pointerEvents: "none",
+                        opacity: isActive ? 1 : 0,
+                        background: "linear-gradient(90deg, rgba(59,130,246,0.18), rgba(255,255,255,0) 55%)",
+                        maskImage: "linear-gradient(#000, #000)",
+                      }}
+                    />
+
                     {/* Icon */}
                     <div style={{
-                      width: 34, height: 34, borderRadius: 10, flexShrink: 0,
+                      width: 36, height: 36, borderRadius: 14, flexShrink: 0,
                       display: "flex", alignItems: "center", justifyContent: "center",
                       background: isActive
-                        ? "rgba(139,92,246,0.15)"
-                        : "rgba(255,255,255,0.05)",
-                      border: `1px solid ${isActive ? "rgba(139,92,246,0.25)" : "rgba(255,255,255,0.07)"}`,
+                        ? "rgba(255,255,255,0.10)"
+                        : "rgba(255,255,255,0.07)",
+                      border: `1px solid ${isActive ? "rgba(255,255,255,0.14)" : "rgba(255,255,255,0.10)"}`,
+                      boxShadow: isActive ? "0 0 0 1px rgba(255,255,255,0.05), 0 0 18px rgba(59,130,246,0.10)" : "none",
                       transition: "all 0.2s ease",
                     }}>
                       <Icon size={15} style={{
-                        color: isActive ? "rgba(196,167,255,0.95)" : "rgba(255,255,255,0.35)",
+                        color: isActive ? "rgba(255,255,255,0.98)" : "rgba(255,255,255,0.78)",
                         transition: "color 0.2s ease",
                       }} />
                     </div>
@@ -517,9 +615,9 @@ export function SiteNav() {
                     {/* Label */}
                     <span style={{
                       flex: 1,
-                      fontSize: 16,
+                      fontSize: 15,
                       fontWeight: isActive ? 500 : 400,
-                      color: isActive ? "rgba(255,255,255,0.95)" : "rgba(255,255,255,0.45)",
+                      color: isActive ? "rgba(255,255,255,0.98)" : "rgba(255,255,255,0.80)",
                       letterSpacing: "0.01em",
                       transition: "color 0.2s ease",
                     }}>
@@ -530,7 +628,8 @@ export function SiteNav() {
                     {isActive && (
                       <div style={{
                         width: 6, height: 6, borderRadius: "50%", flexShrink: 0,
-                        background: "rgba(139,92,246,0.8)",
+                        background: accent,
+                        boxShadow: "0 0 0 3px rgba(59,130,246,0.14), 0 0 16px rgba(59,130,246,0.18)",
                       }} aria-hidden />
                     )}
                   </Link>
@@ -541,7 +640,7 @@ export function SiteNav() {
             {/* Footer */}
             <div style={{
               borderTop: "1px solid rgba(255,255,255,0.05)",
-              padding: "10px 20px 14px",
+              padding: "10px 18px 12px",
             }}>
               <p style={{
                 fontFamily: "var(--font-geist-mono), monospace",
@@ -566,27 +665,30 @@ export function SiteNav() {
           aria-hidden
         />
 
-        {/* Search bottom sheet */}
+        {/* Search top sheet */}
         <div
-          className="fixed bottom-0 left-0 right-0 z-50"
+          className="fixed left-0 right-0 z-50"
           style={{
-            transform: isMobileSearchOpen ? "translateY(0)" : "translateY(105%)",
-            transition: "transform 420ms cubic-bezier(0.32,0.72,0,1)",
+            top: 72,
+            transform: isMobileSearchOpen ? "translateY(0)" : "translateY(-160%)",
+            opacity: isMobileSearchOpen ? 1 : 0,
+            pointerEvents: isMobileSearchOpen ? "auto" : "none",
+            transition: "transform 420ms cubic-bezier(0.32,0.72,0,1), opacity 200ms ease",
           }}
         >
           <div
-            className="rounded-t-3xl overflow-hidden"
+            className="mx-auto w-[min(92vw,420px)] rounded-3xl overflow-hidden"
             style={{
-              background: "rgba(6,7,18,0.92)",
-              borderTop: "1px solid rgba(255,255,255,0.08)",
+              background: "rgba(10,10,12,0.92)",
+              border: "1px solid rgba(255,255,255,0.08)",
               borderLeft: "1px solid rgba(255,255,255,0.06)",
               borderRight: "1px solid rgba(255,255,255,0.06)",
               backdropFilter: "blur(32px)",
-              boxShadow: "0 -16px 48px rgba(0,0,0,0.6), 0 -1px 0 rgba(168,85,247,0.08)",
+              boxShadow: "0 18px 56px rgba(0,0,0,0.65), 0 1px 0 rgba(255,255,255,0.04)",
             }}
           >
             {/* Handle */}
-            <div className="flex justify-center pt-3.5 pb-2">
+            <div className="flex justify-center pt-3 pb-1.5">
               <div className="h-[3px] w-9 rounded-full bg-white/20" />
             </div>
 
@@ -598,6 +700,21 @@ export function SiteNav() {
                 type="text"
                 value={mobileSearchQuery}
                 onChange={(e) => setMobileSearchQuery(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    const first = mobileSearchResults[0]
+                    if (first) {
+                      e.preventDefault()
+                      navigateTo(first.url)
+                      setIsMobileSearchOpen(false)
+                      setMobileSearchQuery("")
+                    }
+                  } else if (e.key === "Escape") {
+                    e.preventDefault()
+                    setIsMobileSearchOpen(false)
+                    setMobileSearchQuery("")
+                  }
+                }}
                 placeholder="Search events..."
                 className="flex-1 bg-transparent text-[15px] text-white placeholder:text-white/30 outline-none"
                 autoComplete="off"
@@ -610,7 +727,7 @@ export function SiteNav() {
             </div>
 
             {/* Results */}
-            <div className="overflow-y-auto max-h-[55vh] pb-8">
+            <div className="overflow-y-auto max-h-[60svh] pb-6">
               {mobileSearchResults.map((result) => (
                 <button
                   key={`${result.url}-${result.label}`}
@@ -624,16 +741,28 @@ export function SiteNav() {
                     <div className="text-white/35 text-xs mt-0.5">{result.sublabel}</div>
                   </div>
                   {result.isFlagship && (
-                    <span className="text-[9px] text-purple-400/80 border border-purple-400/30 rounded px-1.5 py-0.5 shrink-0 uppercase tracking-wider">Flagship</span>
+                    <span className="text-[9px] text-white/70 border border-white/20 rounded px-1.5 py-0.5 shrink-0 uppercase tracking-wider">
+                      Flagship
+                    </span>
                   )}
                   <ArrowUpRight size={13} className="text-white/20 shrink-0" />
                 </button>
               ))}
               {mobileSearchQuery.trim() !== "" && mobileSearchResults.length === 0 && (
-                <p className="text-white/30 text-sm text-center py-8">No results for &ldquo;{mobileSearchQuery}&rdquo;</p>
+                <div className="px-5 py-8 text-center">
+                  <p className="text-white/60 text-sm font-medium">No results</p>
+                  <p className="mt-1 text-white/30 text-xs">
+                    Try a different keyword (department, event name).
+                  </p>
+                </div>
               )}
               {mobileSearchQuery.trim() === "" && (
-                <p className="text-white/20 text-xs text-center py-6 tracking-widest uppercase">Type to search events</p>
+                <div className="px-5 py-7 text-center">
+                  <p className="text-white/30 text-xs tracking-widest uppercase">Search events</p>
+                  <p className="mt-1 text-white/18 text-[11px]">
+                    Type to search by event name or department.
+                  </p>
+                </div>
               )}
             </div>
           </div>
@@ -644,7 +773,7 @@ export function SiteNav() {
           <div className="pointer-events-auto flex items-center rounded-2xl border border-white/10 bg-white/[0.06] backdrop-blur-xl shadow-lg px-1.5 py-1.5 gap-0.5">
             <button
               onClick={() => { setIsMobileMenuOpen((v) => !v); setIsMobileSearchOpen(false) }}
-              className="flex h-8 w-8 items-center justify-center rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all duration-200 active:scale-90"
+              className="flex h-8 w-8 items-center justify-center rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all duration-200 active:scale-90 focus:outline-none focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
               aria-label="Toggle mobile menu"
             >
               {isMobileMenuOpen ? <X size={18} /> : <Menu size={18} />}
@@ -652,7 +781,7 @@ export function SiteNav() {
             <span className="text-white/20 text-xs leading-none select-none px-1" aria-hidden>|</span>
             <button
               onClick={() => { setIsMobileSearchOpen((v) => !v); setIsMobileMenuOpen(false) }}
-              className="flex h-8 w-8 items-center justify-center rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all duration-200 active:scale-90"
+              className="flex h-8 w-8 items-center justify-center rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all duration-200 active:scale-90 focus:outline-none focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
               aria-label="Search"
             >
               {isMobileSearchOpen ? <X size={16} /> : <Search size={16} />}

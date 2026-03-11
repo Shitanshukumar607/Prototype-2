@@ -33,7 +33,7 @@ export default function Page() {
         }}
       >
         <p style={{ color: "#cccccc", lineHeight: 1.75, maxWidth: "560px", margin: "0 auto", fontSize: "1rem" }}>
-          LUMINUS is more than a tech fest — it&apos;s a convergence of the brightest
+          Luminus is more than a techfest — it&apos;s a convergence of the brightest
           minds, boldest ideas, and most disruptive technologies. For three days,
           our campus transforms into a launchpad for innovation.
         </p>

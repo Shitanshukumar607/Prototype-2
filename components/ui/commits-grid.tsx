@@ -14,7 +14,7 @@ export const CommitsGrid: React.FC<CommitsGridProps> = ({
   text,
   animateOnMount = false,
 }) => {
-  const cleanString = (str: string): string => {
+  const cleanString = React.useCallback((str: string): string => {
     const upperStr = str.toUpperCase()
 
     const withoutAccents = upperStr
@@ -26,9 +26,9 @@ export const CommitsGrid: React.FC<CommitsGridProps> = ({
       .split("")
       .filter((char) => allowedChars.includes(char))
       .join("")
-  }
+  }, [])
 
-  const generateHighlightedCells = (value: string) => {
+  const generateHighlightedCells = React.useCallback((value: string) => {
     const cleanedText = cleanString(value)
 
     const width = Math.max(cleanedText.length * 6, 6) + 1
@@ -56,13 +56,13 @@ export const CommitsGrid: React.FC<CommitsGridProps> = ({
       width,
       height: 9, // 7+2 for the top and bottom borders
     }
-  }
+  }, [cleanString])
 
   const {
     cells: targetCells,
     width: gridWidth,
     height: gridHeight,
-  } = React.useMemo(() => generateHighlightedCells(text), [text])
+  } = React.useMemo(() => generateHighlightedCells(text), [text, generateHighlightedCells])
 
   const totalCells = gridWidth * gridHeight
   const [currentCells, setCurrentCells] = React.useState<number[]>([])

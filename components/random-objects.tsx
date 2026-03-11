@@ -3,7 +3,7 @@
 import { AmbientLight, DirectionalLight } from "three";
 import React, { Suspense, useEffect, useState, useRef } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
-import { useGLTF, Clone, Preload } from "@react-three/drei";
+import { useGLTF, Clone } from "@react-three/drei";
 import * as THREE from "three";
 
 const MODEL_PATHS = [
@@ -56,8 +56,8 @@ function FloatingModel({ modelPath, startPos, scale, speed, direction }: { model
     );
 }
 
-// Pre-load all GLTF files
-MODEL_PATHS.forEach((path) => useGLTF.preload(path));
+// Note: we intentionally avoid preloading GLTFs at module load time.
+// The background scene is decorative, and eager preloading can compete with route content.
 
 export function RandomObjects({ zIndexClass = "z-0" }: { zIndexClass?: string }) {
     const [objects, setObjects] = useState<{ id: number; modelPath: string; startPos: [number, number, number]; scale: number; speed: number; direction: [number, number, number] }[]>([]);
@@ -134,6 +134,28 @@ export function RandomObjects({ zIndexClass = "z-0" }: { zIndexClass?: string })
         setObjects(newObjects);
     }, []);
 
+    // Preload GLTFs only after mount (and only when we actually render objects).
+    useEffect(() => {
+        if (objects.length === 0) return;
+
+        const preload = () => {
+            for (const path of MODEL_PATHS) {
+                try { useGLTF.preload(path); } catch { /* ignore */ }
+            }
+        };
+
+        // Use idle time when available to keep the main thread responsive.
+        // Falls back to a short timeout.
+        const w = window as any;
+        if (typeof w.requestIdleCallback === "function") {
+            const id = w.requestIdleCallback(preload, { timeout: 2000 });
+            return () => w.cancelIdleCallback?.(id);
+        }
+
+        const t = window.setTimeout(preload, 600);
+        return () => window.clearTimeout(t);
+    }, [objects.length]);
+
     if (objects.length === 0 || !visible) return null;
 
     return (
@@ -164,7 +186,6 @@ export function RandomObjects({ zIndexClass = "z-0" }: { zIndexClass?: string })
                             direction={obj.direction}
                         />
                     ))}
-                    <Preload all />
                 </Suspense>
             </Canvas>
         </div>

@@ -13,6 +13,7 @@ import {
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { useToast } from "@/hooks/use-toast"
 
 interface EventRegisterDialogProps {
   departmentId: string
@@ -23,6 +24,15 @@ interface EventRegisterDialogProps {
   registrationFee?: number
   registrationOpen?: boolean
 }
+
+const INNOVATRIUM_TRACKS = [
+  "VLSI",
+  "Signal Processing",
+  "Communication",
+  "Embedded Systems and IoT",
+  "Robotics",
+  "Photonics",
+] as const
 
 function parseTeamSize(teamSize: string): { min: number; max: number } {
   const cleaned = teamSize.toLowerCase().trim()
@@ -71,26 +81,22 @@ export function EventRegisterDialog({
   const [open, setOpen] = useState(false)
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const { toast } = useToast()
   const { min, max } = useMemo(() => parseTeamSize(teamSize), [teamSize])
   const [participantSlots, setParticipantSlots] = useState<number[]>(
     Array.from({ length: min }, (_, i) => i + 1)
   )
   const [collegeValues, setCollegeValues] = useState<Record<number, string>>({})
+  const isInnovatrium = departmentId === "ece" && eventName === "Innovatrium"
+  const [selectedTrack, setSelectedTrack] = useState<string>("")
 
   useEffect(() => {
     if (open) {
       setParticipantSlots(Array.from({ length: min }, (_, i) => i + 1))
       setCollegeValues({})
+      if (isInnovatrium) setSelectedTrack("")
     }
-  }, [min, open])
-
-  if (!registrationOpen) {
-    return (
-      <div className="mt-1 inline-flex items-center rounded-full border border-white/20 bg-white/5 px-3 py-1 text-[11px] font-medium tracking-[0.18em] uppercase text-white/60">
-        Registrations closed
-      </div>
-    )
-  }
+  }, [min, open, isInnovatrium])
 
   return (
     <Dialog
@@ -106,9 +112,10 @@ export function EventRegisterDialog({
       <DialogTrigger asChild>
         <Button
           size="sm"
-          className="mt-1 rounded-full bg-amber-400 text-black shadow-[0_10px_30px_rgba(251,191,36,0.28)] transition-all hover:-translate-y-0.5 hover:bg-amber-300"
+          disabled={!registrationOpen}
+          className="mt-1 rounded-full bg-amber-400 text-black shadow-[0_10px_30px_rgba(251,191,36,0.28)] transition-all hover:-translate-y-0.5 hover:bg-amber-300 disabled:opacity-55 disabled:hover:translate-y-0 disabled:hover:bg-amber-400"
         >
-          Register
+          {registrationOpen ? "Register" : "Registrations closed"}
         </Button>
       </DialogTrigger>
       <DialogContent className="max-w-2xl bg-[#020202]/95 text-white border-0 rounded-3xl shadow-[0_30px_90px_rgba(0,0,0,0.9)] backdrop-blur-2xl p-0 overflow-hidden">
@@ -138,6 +145,12 @@ export function EventRegisterDialog({
               }
               e.preventDefault()
               setErrorMessage(null)
+
+              if (isInnovatrium && !selectedTrack) {
+                setErrorMessage("Please select one Innovatrium track before registering.")
+                return
+              }
+
               const formData = new FormData(form)
               const payloadParticipants: Array<{
                 participantNumber: number
@@ -146,6 +159,7 @@ export function EventRegisterDialog({
                 studentId: string
                 email: string
                 phoneNumber: string
+                track?: string
               }> = []
 
               for (const memberIndex of participantSlots) {
@@ -172,6 +186,7 @@ export function EventRegisterDialog({
                   studentId,
                   email,
                   phoneNumber,
+                  ...(isInnovatrium ? { track: selectedTrack } : {}),
                 })
               }
 
@@ -200,11 +215,53 @@ export function EventRegisterDialog({
 
                 if (!response.ok) {
                   const responseBody = await response.json().catch(() => null)
-                  const message =
+
+                  // Try to surface a specific field error from Zod, e.g. which
+                  // participant / field failed validation, instead of a generic payload error.
+                  let message: string =
                     typeof responseBody?.error === "string"
                       ? responseBody.error
                       : "Unable to submit registration right now. Please try again."
+
+                  const fieldErrors = (responseBody as any)?.details?.fieldErrors as
+                    | Record<string, string[]>
+                    | undefined
+
+                  if (fieldErrors) {
+                    const firstWithMessage = Object.entries(fieldErrors).find(
+                      ([, msgs]) => Array.isArray(msgs) && msgs.length > 0,
+                    )
+
+                    if (firstWithMessage) {
+                      const [rawPath, msgs] = firstWithMessage
+                      const rawReason = msgs[0]
+
+                      // Zod paths for participants look like "participants.1.email"
+                      const match = rawPath.match(/^participants\.(\d+)\.(.+)$/)
+                      if (match) {
+                        const participantNumber = Number.parseInt(match[1] ?? "0", 10) + 1
+                        const fieldKey = match[2]
+                        const fieldLabelMap: Record<string, string> = {
+                          name: "name",
+                          collegeName: "college name",
+                          studentId: "USN / student ID",
+                          email: "email",
+                          phoneNumber: "phone number",
+                          track: "track",
+                        }
+                        const fieldLabel = fieldLabelMap[fieldKey] ?? fieldKey
+                        message = `Participant ${participantNumber}: ${fieldLabel} ${rawReason}`
+                      } else if (rawPath && rawReason) {
+                        message = `${rawPath}: ${rawReason}`
+                      }
+                    }
+                  }
+
                   setErrorMessage(message)
+                  toast({
+                    title: "Registration failed",
+                    description: message,
+                  })
                   return
                 }
 
@@ -212,15 +269,73 @@ export function EventRegisterDialog({
                 setCollegeValues({})
                 setParticipantSlots(Array.from({ length: min }, (_, i) => i + 1))
                 setOpen(false)
+                toast({
+                  title: "Registration submitted",
+                  description: "Redirecting to payment...",
+                })
                 window.location.href = "https://payments.billdesk.com/bdcollect/bd/rnsiotec/6492"
               } catch {
-                setErrorMessage("Unable to submit registration right now. Please try again.")
+                const message = "Unable to submit registration right now. Please try again."
+                setErrorMessage(message)
+                toast({
+                  title: "Registration failed",
+                  description: message,
+                })
               } finally {
                 setIsSubmitting(false)
               }
             }}
             className="space-y-5 text-sm px-6 pb-5 pt-4"
           >
+            {isInnovatrium && (
+              <section className="space-y-3 rounded-2xl border border-white/[0.10] bg-white/[0.02] px-4 py-4 backdrop-blur-xl">
+                <header className="flex items-baseline justify-between gap-3">
+                  <p className="text-[11px] uppercase tracking-[0.18em] text-white/55 font-medium">
+                    Innovatrium track *
+                  </p>
+                  <span className="text-[10px] text-white/35">
+                    Choose one focused stream per team.
+                  </span>
+                </header>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1.5">
+                  {INNOVATRIUM_TRACKS.map((track) => {
+                    const active = selectedTrack === track
+                    return (
+                      <button
+                        key={track}
+                        type="button"
+                        aria-pressed={active}
+                        onClick={() => setSelectedTrack(track)}
+                        className={`
+                          flex items-center justify-between rounded-2xl px-3.5 py-2.5 text-[13px]
+                          border transition-all duration-200
+                          ${active
+                            ? "border-amber-300/80 bg-amber-300/10 text-white shadow-[0_0_0_1px_rgba(251,191,36,0.18)]"
+                            : "border-white/12 bg-black/40 text-white/75 hover:border-white/30 hover:bg-black/30"}
+                        `}
+                      >
+                        <span className="truncate">{track}</span>
+                        <span
+                          className={`ml-2 h-2.5 w-2.5 rounded-full ${
+                            active
+                              ? "bg-amber-300 shadow-[0_0_0_4px_rgba(251,191,36,0.28)]"
+                              : "bg-white/22"
+                          }`}
+                          aria-hidden
+                        />
+                      </button>
+                    )
+                  })}
+                </div>
+              </section>
+            )}
+
+            {!registrationOpen && (
+              <div className="rounded-2xl border border-white/10 bg-white/[0.04] px-4 py-3 text-sm text-white/70">
+                Registrations for this event are currently closed.
+              </div>
+            )}
             <div className="space-y-3 rounded-2xl border-0 bg-gradient-to-b from-[#151515] to-[#0c0c0c] px-4 py-4">
               <p className="text-[11px] uppercase tracking-[0.18em] text-white/50 font-medium">
                 Participants

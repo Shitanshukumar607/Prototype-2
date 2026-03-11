@@ -84,10 +84,12 @@ export function SiteBackground() {
             {/* Floating 3D Objects — desktop only, after first paint to keep initial load light */}
             {isDesktop && !defer3D && <RandomObjects zIndexClass={objectsZ} />}
 
-            {/* Scroll-triggered Black Overlay — fades in on scroll so purplish theme vanishes; particle canvas (z-10) stays on top */}
+            {/* Scroll-triggered Black Overlay — on non-events/contact pages (like home),
+                this fades in as you scroll down so the purple glow slowly disappears,
+                and fades back out when you scroll up so the purple returns. */}
             <div
                 className="pointer-events-none fixed inset-0 w-full h-[100vh] bg-black z-[2]"
-                style={{ opacity: isEventsPage ? 0 : fadeOpacity }}
+                style={{ opacity: !isEventsPage && !isContactPage ? fadeOpacity : 0 }}
                 aria-hidden
             />
         </>

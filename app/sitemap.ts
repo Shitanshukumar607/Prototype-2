@@ -3,7 +3,7 @@ import type { MetadataRoute } from "next";
 export default function sitemap(): MetadataRoute.Sitemap {
   const baseUrl = "https://luminus.rnsit.ac.in";
 
-  const routes = ["/", "/events", "/about", "/schedule", "/contact"];
+  const routes = ["/", "/events", "/schedule", "/contact"]
 
   return routes.map((path) => ({
     url: `${baseUrl}${path}`,

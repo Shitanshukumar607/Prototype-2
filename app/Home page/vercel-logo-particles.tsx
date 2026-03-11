@@ -65,7 +65,8 @@ export default function LuminusParticles({ startDispersed = false, hideCursor = 
       // Fewer fill particles when dispersed for performance; logo density is handled by main particles.
       const count = mobile
         ? Math.min(220, Math.floor((w * h) / (90 * 90)))
-        : Math.min(550, Math.floor((w * h) / (68 * 68)))
+        // On desktop, keep density lower so the animation stays smooth even on mid‑range GPUs.
+        : Math.min(380, Math.floor((w * h) / (80 * 80)))
       fillParticles = []
       for (let i = 0; i < count; i++) {
         const r = 200 + Math.floor(Math.random() * 55)
@@ -87,8 +88,8 @@ export default function LuminusParticles({ startDispersed = false, hideCursor = 
       const h = window.innerHeight
       const prevW = canvas.width
       const prevH = canvas.height
-      // Keep DPR low on mobile to avoid over-rendering the canvas.
-      const dprCap = isMobileViewport() ? 1 : 2
+      // Keep DPR capped so we don't over-render the canvas; slightly under native on desktop for smoother animation.
+      const dprCap = isMobileViewport() ? 1 : 1.5
       const dpr = Math.min(typeof window !== "undefined" ? window.devicePixelRatio || 1 : 1, dprCap)
       const nextW = Math.max(1, Math.round(w * dpr))
       const nextH = Math.max(1, Math.round(h * dpr))
@@ -216,9 +217,10 @@ export default function LuminusParticles({ startDispersed = false, hideCursor = 
             const isTextPixel = Math.abs(r - g) < 20 && Math.abs(r - b) < 20 && Math.abs(g - b) < 20 && r > 100
             const wf = isTextPixel ? 0.75 : 0
 
-            // On desktop, thin out non-text particles for smoother performance; text stays dense for legibility.
-            if (!isMobile && !isTextPixel && Math.random() < 0.4) {
-              continue
+            // Thin out non-text particles for smoother performance; text stays dense for legibility.
+            if (!isTextPixel) {
+              if (!isMobile && Math.random() < 0.6) continue
+              if (isMobile && Math.random() < 0.3) continue
             }
 
             const rVal = Math.round(Math.min(255, r + (255 - r) * wf))
@@ -382,9 +384,9 @@ export default function LuminusParticles({ startDispersed = false, hideCursor = 
       scrollProgress += (targetScrollProgress - scrollProgress) * lerpSpeed
 
       const isMobile = isMobileViewport()
-      // Draw fill particles when scrolled — fade in with scroll to fill the background.
-      // On mobile, skip drawing them once we're mostly dispersed to keep things snappy.
-      if (fillParticles.length > 0 && scrollProgress > 0 && (!isMobile || scrollProgress < 0.85)) {
+      // Draw extra background fill particles only on desktop so mobile never
+      // turns into an overly noisy/starry background when scrolling.
+      if (!isMobile && fillParticles.length > 0 && scrollProgress > 0) {
         const fillAlpha = 0.05 + 0.2 * scrollProgress
         const time002 = time * 0.002
         for (let i = 0; i < fillParticles.length; i++) {

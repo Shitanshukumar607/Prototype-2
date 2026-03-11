@@ -81,6 +81,22 @@ const FAQ_ITEMS = [
 
 export default function ContactPage() {
   const [hasCopiedHelpdesk, setHasCopiedHelpdesk] = useState(false)
+  const [copiedPhone, setCopiedPhone] = useState<string | null>(null)
+
+  const copyToClipboard = (text: string, key?: string): Promise<boolean> => {
+    if (!navigator.clipboard) return Promise.resolve(false)
+
+    return navigator.clipboard
+      .writeText(text)
+      .then(() => {
+        if (key) {
+          setCopiedPhone(key)
+          setTimeout(() => setCopiedPhone(null), 1500)
+        }
+        return true
+      })
+      .catch(() => false)
+  }
 
   return (
     <main className="relative min-h-screen">
@@ -119,15 +135,11 @@ export default function ContactPage() {
                         type="button"
                         aria-label="Copy helpdesk email"
                         onClick={() => {
-                          if (navigator.clipboard) {
-                            navigator.clipboard
-                              .writeText("helpdesk.luminus@gmail.com")
-                              .then(() => {
-                                setHasCopiedHelpdesk(true)
-                                setTimeout(() => setHasCopiedHelpdesk(false), 1500)
-                              })
-                              .catch(() => {})
-                          }
+                          copyToClipboard("helpdesk.luminus@gmail.com").then((ok) => {
+                            if (!ok) return
+                            setHasCopiedHelpdesk(true)
+                            setTimeout(() => setHasCopiedHelpdesk(false), 1500)
+                          })
                         }}
                         className="inline-flex h-6 w-6 items-center justify-center rounded-full border border-white/20 bg-white/5 text-white/60 hover:text-white hover:border-white/40 transition-colors focus-visible:outline-none focus-visible:ring-0"
                       >
@@ -139,6 +151,85 @@ export default function ContactPage() {
                         </span>
                       )}
                     </div>
+                  </li>
+                  <li>
+                    <span className="text-white/45 text-xs uppercase tracking-widest block mb-1">
+                      Mobile
+                    </span>
+                    <ul className="space-y-1.5">
+                      <li className="flex flex-wrap items-baseline gap-x-2 gap-y-0.5">
+                        <span className="text-white/80">Tanisha V Shetty</span>
+                        <div className="flex items-center gap-2">
+                          <a
+                            href="tel:+918088586578"
+                            className="text-white hover:text-white/80 underline underline-offset-2 transition-colors"
+                          >
+                            +91 80885 86578
+                          </a>
+                          <button
+                            type="button"
+                            aria-label="Copy Tanisha V Shetty phone number"
+                            onClick={() => copyToClipboard("+918088586578", "tanisha")}
+                            className="inline-flex h-6 w-6 items-center justify-center rounded-full border border-white/20 bg-white/5 text-white/60 hover:text-white hover:border-white/40 transition-colors focus-visible:outline-none focus-visible:ring-0"
+                          >
+                            <Copy className="h-3 w-3" />
+                          </button>
+                          {copiedPhone === "tanisha" && (
+                            <span className="text-[10px] uppercase tracking-[0.18em] text-white/55">
+                              Copied!
+                            </span>
+                          )}
+                        </div>
+                      </li>
+                      <li className="flex flex-wrap items-baseline gap-x-2 gap-y-0.5">
+                        <span className="text-white/80">Syed Javed</span>
+                        <div className="flex items-center gap-2">
+                          <a
+                            href="tel:+917899278471"
+                            className="text-white hover:text-white/80 underline underline-offset-2 transition-colors"
+                          >
+                            +91 78992 78471
+                          </a>
+                          <button
+                            type="button"
+                            aria-label="Copy Syed Javed phone number"
+                            onClick={() => copyToClipboard("+917899278471", "syed")}
+                            className="inline-flex h-6 w-6 items-center justify-center rounded-full border border-white/20 bg-white/5 text-white/60 hover:text-white hover:border-white/40 transition-colors focus-visible:outline-none focus-visible:ring-0"
+                          >
+                            <Copy className="h-3 w-3" />
+                          </button>
+                          {copiedPhone === "syed" && (
+                            <span className="text-[10px] uppercase tracking-[0.18em] text-white/55">
+                              Copied!
+                            </span>
+                          )}
+                        </div>
+                      </li>
+                      <li className="flex flex-wrap items-baseline gap-x-2 gap-y-0.5">
+                        <span className="text-white/80">Koushik V</span>
+                        <div className="flex items-center gap-2">
+                          <a
+                            href="tel:+919353195315"
+                            className="text-white hover:text-white/80 underline underline-offset-2 transition-colors"
+                          >
+                            +91 93531 95315
+                          </a>
+                          <button
+                            type="button"
+                            aria-label="Copy Koushik V phone number"
+                            onClick={() => copyToClipboard("+919353195315", "koushik")}
+                            className="inline-flex h-6 w-6 items-center justify-center rounded-full border border-white/20 bg-white/5 text-white/60 hover:text-white hover:border-white/40 transition-colors focus-visible:outline-none focus-visible:ring-0"
+                          >
+                            <Copy className="h-3 w-3" />
+                          </button>
+                          {copiedPhone === "koushik" && (
+                            <span className="text-[10px] uppercase tracking-[0.18em] text-white/55">
+                              Copied!
+                            </span>
+                          )}
+                        </div>
+                      </li>
+                    </ul>
                   </li>
                   <li>
                     <span className="text-white/45 text-xs uppercase tracking-widest block mb-1">Venue</span>
@@ -168,21 +259,21 @@ export default function ContactPage() {
 
           {/* FAQ */}
           <section aria-label="Frequently asked questions">
-            <h2 className="text-[11px] font-medium uppercase tracking-[0.2em] text-white/40 mb-4">
+            <h2 className="text-[11px] font-medium uppercase tracking-[0.2em] text-white/40 mb-6 px-1">
               Frequently asked questions
             </h2>
-            <div className="rounded-2xl border border-white/[0.08] bg-white/[0.06] backdrop-blur-2xl overflow-hidden">
+            <div className="rounded-3xl border border-white/[0.08] bg-white/[0.04] hover:bg-white/[0.06] transition-colors duration-500 backdrop-blur-2xl px-5 sm:px-7 overflow-hidden shadow-2xl">
               <Accordion type="single" collapsible className="w-full">
                 {FAQ_ITEMS.map((item, i) => (
                   <AccordionItem
                     key={i}
                     value={`faq-${i}`}
-                    className="border-none px-5 sm:px-6"
+                    className="border-b border-white/[0.06] last:border-none group"
                   >
-                    <AccordionTrigger className="text-left text-white/90 hover:text-white py-4 hover:no-underline">
+                    <AccordionTrigger className="text-left text-white/70 hover:text-white py-5 hover:no-underline transition-all duration-500 ease-expo font-medium text-[15px] sm:text-[16px] tracking-tight [&[data-state=open]]:text-white [&>svg]:text-white/30 [&>svg]:hover:text-white/70 [&[data-state=open]>svg]:text-white">
                       {item.q}
                     </AccordionTrigger>
-                    <AccordionContent className="text-white/55 text-sm pb-4">
+                    <AccordionContent className="text-white/55 text-[14px] sm:text-[15px] pb-5 leading-relaxed pr-6 sm:pr-10">
                       {item.a}
                     </AccordionContent>
                   </AccordionItem>

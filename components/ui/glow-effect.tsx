@@ -41,10 +41,10 @@ export function GlowEffect({
   const BASE_TRANSITION = {
     repeat: Infinity,
     duration: duration,
-    ease: "linear",
+    ease: [0, 0, 1, 1],
   }
 
-  const animations = {
+  const animations: Record<NonNullable<GlowEffectProps["mode"]>, any> = {
     rotate: {
       background: [
         `conic-gradient(from 0deg at 50% 50%, ${colors.join(", ")})`,
@@ -113,6 +113,7 @@ export function GlowEffect({
   }
 
   const getBlurClass = (blurVal: GlowEffectProps["blur"]) => {
+    if (blurVal == null) return "blur-md"
     if (typeof blurVal === "number") {
       return ""
     }
@@ -144,7 +145,7 @@ export function GlowEffect({
           ...(isNumericBlur ? { filter: `blur(${blur}px)` } : {}),
         } as React.CSSProperties
       }
-      animate={animations[mode]}
+      animate={animations[mode] as any}
       className={cn(
         "pointer-events-none absolute inset-0 h-full w-full",
         "scale-[var(--scale)] transform-gpu",

@@ -1,6 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react"
+import Link from "next/link"
 
 export default function HackathonSection() {
   const [glitch, setGlitch] = useState(false)
@@ -187,7 +188,7 @@ export default function HackathonSection() {
               </span>
             </div>
               <span className="tag-mono" style={{ fontSize: '10px', color: 'rgba(255,255,255,0.52)', letterSpacing: '0.2em', textTransform: 'uppercase' }}>
-              LUMINUS&apos;26
+              LUMINUS 2026
             </span>
           </div>
 
@@ -309,7 +310,7 @@ export default function HackathonSection() {
 
             {/* CTAs */}
             <div style={{ display: 'flex', flexDirection: isMobile ? 'row' : 'column', gap: '8px' }}>
-              <a
+              <Link
                 href="/events/grand-hackathon"
                 className="register-btn btn-primary"
                 style={{
@@ -326,8 +327,8 @@ export default function HackathonSection() {
               >
                 <span>Register</span>
                 <span className="arrow-icon" style={{ display: 'inline-block', transition: 'transform 0.2s' }}>→</span>
-              </a>
-              <a
+              </Link>
+              <Link
                 href="/events/grand-hackathon"
                 style={{
                   flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center',
@@ -344,7 +345,7 @@ export default function HackathonSection() {
                 onMouseLeave={e => { (e.currentTarget as HTMLElement).style.color = 'rgba(255,255,255,0.82)'; (e.currentTarget as HTMLElement).style.borderColor = 'rgba(255,255,255,0.18)'; (e.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,0.06)'; }}
               >
                 Details
-              </a>
+              </Link>
             </div>
           </div>
 
